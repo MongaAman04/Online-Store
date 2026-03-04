@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import { FaUserLarge } from "react-icons/fa6";
-import { useContext } from "react";
-import MyContext from "../context/mycontext";
+
 export const SearchandUser = ()=>{
     const user = JSON.parse(localStorage.getItem('users'));
     const navigate = useNavigate();

@@ -1,55 +1,85 @@
 import './App.css'
-import { Footer } from './componets/footer'
-import { Header } from './componets/header'
-import {BrowserRouter as Router , Routes , Route} from "react-router-dom";
-import { Home } from './home';
-import { Contact } from './contact';
-import { About } from './about';
-import { Products } from './products';
-import { SingleProduct } from './singleProduct';
-import { Cart } from './cart';
-import { OrderForm } from './orderform';
-import Signup from './registration/signup';
-import Login from './registration/login';
-import { MyState } from './context/mystate';
+import { SingleProduct } from './features/products/singleProduct';
+import { Cart } from './features/cart/cart';
+import { OrderForm } from './features/orderform/orderform';
+import Signup from './features/registration/signup';
+import Login from './features/registration/login';
+import { MyState } from './features/context/mystate';
 import { SearchandUser } from './componets/searchanduser';
-import { Userpage } from './userPage';
-import { AdminDashBoard } from './adminDashborad';
+import { Userpage } from './features/dasboard/userPage';
+import { AdminDashBoard } from './features/dasboard/adminDashborad';
 import { UserRoute } from './protectedRoutes/userProtected';
 import { AdminRoute } from './protectedRoutes/adminProtected';
-import { AddProductPage } from './addProduct';
+import { AddProductPage } from './features/products/addProduct';
+import { Home } from './pages/homepage/home';
+import { About } from './pages/about/about';
+import { Products } from './pages/homepage/products';
+import { Contact } from './pages/contact/contact';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Applayout from './componets/applayout';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Applayout />,
+    children: [
+      {
+        path:'/',
+        element:<Home />,
+      },
+      {
+        path:'/contact',
+        element:<Contact />,
+      },
+      {
+        path:'/about',
+        element:<About />,
+      },
+      {
+        path:'/products',
+        element:<Products />,
+      },
+      {
+        path:'/signup',
+        element:<Signup />,
+      },
+      {
+        path:'/login',
+        element:<Login />,
+      },
+      {
+        path:'/productdetails',
+        element:<SingleProduct />,
+      },
+      {
+        path:'/addproduct',
+        element:<AddProductPage />,
+      },
+      {
+        path:'/profile/user',
+        element:<Userpage />,
+      },
+      {
+        path:'/profile/admin',
+        element:<AdminDashBoard />,
+      },
+      {
+        path:'/cart',
+        element:<Cart />,
+      },
+      {
+        path:'/placeorder',
+        element:<OrderForm />,
+      },
+    ]
+
+  }
+])
 function App() {
-  return(
+  return (
     <MyState>
-   <Router>
-    <SearchandUser/>
-    <Header/>
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/contact' element={<Contact/>}/>
-      <Route path='/about' element={<About/>}/>
-      <Route path='/products' element={<Products/>}/>
-      <Route path='/product/:id' element={<SingleProduct/>}/>
-      <Route path='/cart/:id' element={<Cart/>}/>
-      <Route path='/placeOrder/:name/:id' element={<OrderForm/>}/>
-      <Route path='/signup' element={<Signup/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/addproduct' element={<AddProductPage/>}/>
-      <Route path='/userpage/:name' element={
-        <UserRoute>
-        <Userpage/>
-        </UserRoute>
-        }/>
-      <Route path='/admin/:name' element={
-        <AdminRoute>
-        <AdminDashBoard/>
-        </AdminRoute>
-        }/>
-        <Route path='/cart' element={<Cart/>}/>
-    </Routes>
-    <Footer/>
-   </Router>
-   </MyState>
+      <RouterProvider router={router}></RouterProvider>
+    </MyState>
   )
 }
 

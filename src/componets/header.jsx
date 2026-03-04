@@ -1,26 +1,27 @@
-import { NavLink } from "react-router-dom";
-import { FaShoppingCart } from "react-icons/fa";
-export const Header = ()=>{
-    return <header>
-        <nav className="flex justify-around bg-amber-400 text-black p-3">
-            <h1>PKS</h1>
-            <ul className="flex gap-7">
-                <li>
-                    <NavLink to="/">Home</NavLink>
-                </li>
-                <li>
-                <NavLink to="/about">About</NavLink>
-                </li>
-                <li>
-                <NavLink to="/contact">Contact</NavLink>
-                </li>
-                <li>
-                <NavLink to="/products">Products</NavLink>
-                </li>
-                <li className="text-2xl flex">
-                   <NavLink to="/cart"><FaShoppingCart/></NavLink> 
-                </li>
-            </ul>
-        </nav>
-    </header>
-}
+import { FaShoppingCart, FaSearch, FaRegHeart } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { Nav } from "./nav";
+
+export const Header = () => {
+  
+  const navVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.1 } 
+    }
+  };
+
+  
+  return (
+    <motion.header 
+      initial="hidden"
+      animate="visible"
+      variants={navVariants}
+      className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-rose-100"
+    >
+     <Nav/>
+    </motion.header>
+  );
+};

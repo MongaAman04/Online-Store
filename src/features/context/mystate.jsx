@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import MyContext from "./mycontext";
+import MyContext from "../context/mycontext";
 import { collection, onSnapshot, orderBy, query, QuerySnapshot } from "firebase/firestore";
-import { Firedb } from "../firebase/firebaseConfig";
+import { Firedb } from "../../firebase/firebaseConfig";
 
 export const MyState = ({ children })=>{
     const [loading , setLoading] = useState(false);
