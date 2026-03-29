@@ -41,7 +41,7 @@ export const Nav = () => {
       </ul>
       {
         !user ? <div className="flex justify-center items-center">
-          <Link to={`/login`}>
+          <Link to={`/signup`}>
           <motion.button
             whileHover={{
               scale: 1.05,
@@ -52,7 +52,7 @@ export const Nav = () => {
             className="group relative flex items-center gap-3 bg-rose-500 border border-rose-100 px-8 py-3 rounded-full transition-all duration-300 hover:bg-rose-600"
           >
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-white group-hover:text-white transition-colors">
-               Login
+               Login/Sign up
             </span>
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-rose-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
           </motion.button>
@@ -73,7 +73,7 @@ export const Nav = () => {
               whileTap={{ scale: 0.9 }}
               className="cursor-pointer"
             >
-              <NavLink to="/profile/user" className="relative group">
+              <NavLink to={user.role == 'admin' ? '/profile/admin' : '/profile/user'} className="relative group">
                
                 <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 transition-all duration-300 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-200">
                   <User size={22} strokeWidth={1.5} />

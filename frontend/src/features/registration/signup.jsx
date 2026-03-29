@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
-
+import sample2 from "../../assets/products/sample4.png"
 const Signup = () => {
     const context = useContext(MyContext);
     const { loading, setLoading } = context;
@@ -70,6 +70,18 @@ const Signup = () => {
         } else if (!/^[6-9]\d{9}$/.test(userSignUp.phone)) {
             newErrors.phone = "Enter a valid 10-digit phone number.";
             isValid = false;
+        } else if (/^(\d)\1{9}$/.test(userSignUp.phone)) {
+           
+            newErrors.phone = "Enter a valid phone number.";
+            isValid = false;
+        } else if (["1234567890", "0987654321", "1234512345", "9876543210"].includes(userSignUp.phone)) {
+          
+            newErrors.phone = "Enter a valid phone number.";
+            isValid = false;
+        } else if (/^(\d{5})\1$/.test(userSignUp.phone)) {
+          
+            newErrors.phone = "Enter a valid phone number.";
+            isValid = false;
         }
 
         setErrors(newErrors);
@@ -77,7 +89,7 @@ const Signup = () => {
     };
 
     const userSignupFunction = async () => {
-        if (!validate()) return; 
+        if (!validate()) return;
 
         setLoading(true);
         try {
@@ -86,7 +98,7 @@ const Signup = () => {
             const user = {
                 name: userSignUp.name,
                 email: users.user.email,
-                phone: userSignUp.phone, 
+                phone: userSignUp.phone,
                 uid: users.user.uid,
                 role: userSignUp.role,
                 time: Timestamp.now(),
@@ -101,14 +113,13 @@ const Signup = () => {
             await addDoc(UserRef, user);
             Cookies.set("users", JSON.stringify(user), { expires: 15 });
             setUserSignUp({ name: "", email: "", password: "", phone: "", role: "user" });
-            setErrors({ name: "", email: "", password: "", phone: "" }); 
+            setErrors({ name: "", email: "", password: "", phone: "" });
             setLoading(false);
             toast.success("Welcome to Store!");
             navigate("/");
 
         } catch (error) {
             setLoading(false);
-            // ✅ Specific Firebase error messages
             if (error.code === "auth/email-already-in-use") {
                 setErrors(prev => ({ ...prev, email: "This email is already registered." }));
             } else if (error.code === "auth/invalid-email") {
@@ -134,7 +145,7 @@ const Signup = () => {
                 className="hidden md:flex md:w-1/2 bg-rose-50 relative overflow-hidden"
             >
                 <img
-                    src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1200&auto=format&fit=crop"
+                    src={sample2}
                     alt="Fashion Lifestyle"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

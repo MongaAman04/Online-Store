@@ -1,151 +1,117 @@
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
+import heroImage from "../../assets/products/sample5.png"; 
 
 export const HeroSection = () => {
-  // --- 1. Tilt Effect Logic (Faux-3D) ---
-  // These motion values capture the cursor's x/y position relative to the center.
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Map the cursor position (-0.5 to 0.5) to a tilt rotation (-15 to 15 degrees).
-  const rotateX = useTransform(y, [-0.5, 0.5], [15, -15]);
-  const rotateY = useTransform(x, [-0.5, 0.5], [-15, 15]);
-
-  function handleMouseMove(event) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    // Calculate relative position (-0.5 to 0.5)
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-
-    x.set(xPct);
-    y.set(yPct);
-  }
-
-  function handleMouseLeave() {
-    // Smoothly reset the tilt when the mouse leaves the area
-    x.set(0);
-    y.set(0);
-  }
-
-  // --- 2. Animation Variants for Text ---
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.3 },
-    },
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } // Custom "Cubic Bezier" ease-out for elegance
-    },
-  };
-
   return (
-    <section className="relative w-full min-h-[85vh] bg-rose-50/50 overflow-hidden flex items-center">
-      {/* Background Decorative Element */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-rose-100 rounded-full blur-3xl opacity-60" />
-
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+    <section className="relative w-full min-h-screen flex items-center overflow-hidden bg-rose-50">
+      
+      <div className="absolute inset-0 z-0">
+       
+        <motion.img 
+          initial={{ scale: 1.1, x: 50 }}
+          animate={{ scale: 1, x: 0 }}
+          transition={{ duration: 2.5, ease: "easeOut" }}
+          src={heroImage} 
+          alt="Luxury Collection" 
+          className="w-full h-full object-cover object-right-center opacity-90 md:opacity-100"
+        />
         
-        {/* --- Left Column: Text Content --- */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-center md:text-left"
+        {/* Soft Warm Overlays */}
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-rose-50/10 via-rose-50/10 to-transparent" /> */}
+        {/* <div className="absolute inset-0 bg-gradient-to-t from-rose-100/20 via-transparent to-transparent" /> */}
+      </div>
+
+      {/* --- Floating Organic Blobs for Feminine Energy --- */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          x: [0, 30, 0],
+          y: [0, -20, 0] 
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        className="absolute top-20 left-10 w-72 h-72 bg-rose-200/50 rounded-full blur-3xl"
+      />
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.3, 1],
+          x: [0, -50, 0],
+          y: [0, 40, 0] 
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-10 right-1/4 w-96 h-96 bg-rose-300/30 rounded-full blur-3xl"
+      />
+
+      {/* --- Main Content --- */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full py-20">
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-xl p-8 md:p-10 rounded-3xl backdrop-blur-sm bg-white/20 border border-white/40 shadow-2xl shadow-rose-200/50"
         >
-          <motion.span 
-            variants={textVariants}
-            className="inline-block px-4 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-[0.2em] mb-4"
-          >
-            Spring '24 Collection
-          </motion.span>
+          {/* Subtle Tagline */}
+          <div className="flex items-center gap-3 mb-6">
+            <span className="w-8 h-[1px] bg-rose-500"></span>
+            <span className="text-rose-600 text-xs font-bold uppercase tracking-[0.3em]">
+              Made for Her
+            </span>
+          </div>
 
-          <motion.h1 
-            variants={textVariants}
-            className="text-5xl md:text-7xl font-serif italic text-gray-900 leading-tight mb-6"
-          >
-            Step into<br />
-            <span className="text-rose-500 not-italic font-bold">Elegance<span className="text-gray-900">.</span></span>
-          </motion.h1>
+          <h1 className="text-5xl md:text-7xl font-serif text-gray-900 leading-[1.1] mb-6">
+            Grace in Every <br />
+            <span className="text-rose-500 italic">Footstep.</span>
+          </h1>
 
-          <motion.p 
-            variants={textVariants}
-            className="text-lg text-gray-600 mb-10 max-w-md mx-auto md:mx-0 font-light leading-relaxed"
-          >
-            Discover footwear designed not just for walking, but for making an entrance. Crafted for comfort, styled for the modern woman.
-          </motion.p>
+          <p className="text-base md:text-lg text-gray-700 mb-10 font-light leading-relaxed">
+            Curated footwear for the woman who values <strong>elegance without compromise</strong>. 
+            Each pair is a tribute to feminine strength and timeless beauty.
+          </p>
 
-          <motion.div variants={textVariants} className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+          <div className="flex flex-col sm:flex-row gap-5">
             <NavLink to="/products">
               <motion.button 
-                whileHover={{ scale: 1.05, backgroundColor: "#e11d48" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-12 py-4 rounded-full bg-gray-900 text-white font-bold tracking-widest text-sm shadow-xl shadow-gray-200"
+                whileHover={{ scale: 1.03, boxShadow: "0 20px 25px -5px rgb(244 63 94 / 0.3)" }}
+                whileTap={{ scale: 0.98 }}
+                className="px-10 py-4 bg-rose-500 text-white font-bold rounded-full tracking-wider text-sm shadow-lg shadow-rose-500/20 transition-all"
               >
-                SHOP THE COLLECTION
+                SHOP THE EDIT
               </motion.button>
             </NavLink>
-            
+
             <NavLink to="/about">
-              <button className="px-12 py-4 rounded-full border border-gray-300 text-gray-700 font-semibold text-sm hover:bg-white transition-colors">
-                Our Story
-              </button>
+              <motion.button 
+                whileHover={{ backgroundColor: "rgba(255, 255, 255, 1)" }}
+                className="px-10 py-4 border-2 border-rose-500/20 text-rose-600 font-bold rounded-full text-sm bg-white/50 transition-all"
+              >
+                THE CRAFTSMANSHIP
+              </motion.button>
             </NavLink>
-          </motion.div>
+          </div>
+
+          {/* Luxury Metric Tags */}
+          <div className="mt-12 pt-8 border-t border-rose-200/50 flex gap-8">
+            <div>
+              <p className="text-xl font-serif text-rose-500 italic">100%</p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-500">Vegan Leather</p>
+            </div>
+            <div>
+              <p className="text-xl font-serif text-rose-500 italic">Global</p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-500">Shipping</p>
+            </div>
+          </div>
         </motion.div>
-
-        {/* --- Right Column: Interactive 3D/Image --- */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0, transition: { duration: 1, delay: 0.5, ease: "easeOut" } }}
-          className="relative flex justify-center items-center"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          // "style" is used by motion values, but needs perspective on the parent for 3D effect
-          style={{ perspective: 1000 }} 
-        >
-          {/* Decorative "Halo" Ring behind the shoe */}
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute w-[120%] h-[120%] border-2 border-dashed border-rose-200 rounded-full opacity-60"
-          />
-
-          {/* The Tilted Shoe Container */}
-          <motion.div
-            style={{
-              rotateX,
-              rotateY,
-              transformStyle: "preserve-3d", // Required for true 3D effect
-            }}
-            className="relative cursor-grab active:cursor-grabbing"
-          >
-            {/* *** IMPORTANT ***
-              Replace 'YOUR_SHOE_IMAGE_URL' with a high-res, 
-              transparent PNG of a stylish shoe (like a heel or premium sneaker).
-              A slight side-profile angle works best for this tilt effect.
-            */}
-            <img 
-              src="YOUR_SHOE_IMAGE_URL_HERE.png" 
-              alt="Featured PKS Luxury Footwear"
-              className="w-full max-w-lg drop-shadow-[0_35px_35px_rgba(225,29,72,0.15)]"
-              // The drop-shadow uses a tint of the rose color to make it glow
-            />
-          </motion.div>
-        </motion.div>
-
       </div>
+
+      {/* --- Side Social Links or Decorative text --- */}
+      <div className="hidden xl:flex absolute right-10 top-0 h-full items-center flex-col justify-center gap-24 py-10">
+        <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-rose-300 to-transparent"></div>
+        <p className="text-rose-400 text-[10px] tracking-[0.8em] uppercase rotate-90 whitespace-nowrap">
+          PKS LUXURY COLLECTION
+        </p>
+        <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-rose-300 to-transparent"></div>
+      </div>
+
     </section>
   );
 };

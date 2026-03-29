@@ -13,7 +13,7 @@ import { AdminRoute } from './protectedRoutes/adminProtected';
 import { AddProductPage } from './features/products/addProduct';
 import { Home } from './pages/homepage/home';
 import { About } from './pages/about/about';
-
+import { Analytics } from '@vercel/analytics/react';
 import { Contact } from './pages/contact/contact';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Applayout from './componets/applayout';
@@ -78,9 +78,12 @@ const router = createBrowserRouter([
 ])
 function App() {
   return (
+    <>
     <MyState>
       <RouterProvider router={router}></RouterProvider>
     </MyState>
+    <Analytics/>
+     </>
   )
 }
 
