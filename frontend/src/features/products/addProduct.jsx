@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import {
     PlusCircle, ImageIcon, Tag, IndianRupee,
-    AlignLeft, Layers, Upload, X, Percent, Package
+    AlignLeft, Layers, Upload, X, Percent, Package, Plus, Minus
 } from "lucide-react";
 import { uploadImage } from "../../config/cloudinary-config";
 
@@ -19,6 +19,7 @@ const categoryList = [
 ];
 
 const genderList = ["men", "women", "unisex", "kids"];
+const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12];
 
 export const AddProductPage = () => {
     const { loading, setLoading } = useContext(MyContext);
@@ -34,8 +35,9 @@ export const AddProductPage = () => {
         price: "",
         originalPrice: "",
         discount: 0,
-        stock: "",
-        sizes: [],
+        // ✅ sizeInventory replaces flat stock & sizes
+        // { 6: 10, 7: 5, 8: 0 } etc.
+        sizeInventory: {},
         images: [],
         thumbnail: "",
         isFeatured: false,
@@ -49,11 +51,38 @@ export const AddProductPage = () => {
         updatedAt: Timestamp.now(),
     });
 
-    const [imageFiles, setImageFiles] = useState([]);      // raw File objects
-    const [imagePreviews, setImagePreviews] = useState([]); // local preview URLs
+    const [imageFiles, setImageFiles] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]);
     const [errors, setErrors] = useState({});
 
-   
+    // ✅ Toggle size — adds with qty 1, removes if toggled off
+    const toggleSize = (size) => {
+        setProducts(prev => {
+            const updated = { ...prev.sizeInventory };
+            if (updated[size] !== undefined) {
+                delete updated[size]; // remove size
+            } else {
+                updated[size] = 1;   // add size with default qty 1
+            }
+            return { ...prev, sizeInventory: updated };
+        });
+    };
+
+    // ✅ Update quantity for a specific size
+    const updateSizeQty = (size, delta) => {
+        setProducts(prev => {
+            const current = prev.sizeInventory[size] ?? 1;
+            const newQty = Math.max(1, current + delta); // min qty = 1
+            return {
+                ...prev,
+                sizeInventory: { ...prev.sizeInventory, [size]: newQty }
+            };
+        });
+    };
+
+    // ✅ Total stock = sum of all size quantities
+    const totalStock = Object.values(products.sizeInventory).reduce((a, b) => a + b, 0);
+
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length + imagePreviews.length > 4) {
@@ -65,23 +94,11 @@ export const AddProductPage = () => {
         setImagePreviews(prev => [...prev, ...newPreviews]);
     };
 
-    // ✅ Remove selected image
     const removeImage = (index) => {
         setImageFiles(prev => prev.filter((_, i) => i !== index));
         setImagePreviews(prev => prev.filter((_, i) => i !== index));
     };
 
-    // ✅ Toggle sizes
-    const toggleSize = (size) => {
-        setProducts(prev => ({
-            ...prev,
-            sizes: prev.sizes.includes(size)
-                ? prev.sizes.filter(s => s !== size)
-                : [...prev.sizes, size]
-        }));
-    };
-
-    // ✅ Auto calculate discount
     const handlePriceChange = (field, value) => {
         const updated = { ...products, [field]: value };
         if (updated.originalPrice && updated.price) {
@@ -92,7 +109,6 @@ export const AddProductPage = () => {
         setProducts(updated);
     };
 
-    // ✅ Validation
     const validate = () => {
         const newErrors = {};
         if (!products.name.trim()) newErrors.name = "Product name is required.";
@@ -102,9 +118,8 @@ export const AddProductPage = () => {
         if (!products.price || isNaN(products.price)) newErrors.price = "Valid price is required.";
         if (!products.originalPrice || isNaN(products.originalPrice)) newErrors.originalPrice = "Valid original price is required.";
         if (Number(products.price) > Number(products.originalPrice)) newErrors.price = "Price cannot exceed original price.";
-        if (!products.stock || isNaN(products.stock)) newErrors.stock = "Stock is required.";
         if (!products.description.trim()) newErrors.description = "Description is required.";
-        if (products.sizes.length === 0) newErrors.sizes = "Select at least one size.";
+        if (Object.keys(products.sizeInventory).length === 0) newErrors.sizes = "Select at least one size.";
         if (imageFiles.length === 0) newErrors.images = "At least one image is required.";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -118,11 +133,10 @@ export const AddProductPage = () => {
 
         setLoading(true);
         try {
-            // ✅ Upload all images to Cloudinary
             const uploadedUrls = await Promise.all(
                 imageFiles.map(file => uploadImage(file))
             );
-            
+
             const productData = {
                 ...products,
                 name: products.name.trim(),
@@ -130,7 +144,10 @@ export const AddProductPage = () => {
                 description: products.description.trim(),
                 price: Number(products.price),
                 originalPrice: Number(products.originalPrice),
-                stock: Number(products.stock),
+                // ✅ Save sizeInventory as object + totalStock as convenience field
+                sizeInventory: products.sizeInventory,
+                stock: totalStock,
+                sizes: Object.keys(products.sizeInventory).map(Number), // [6, 7, 8]
                 images: uploadedUrls,
                 thumbnail: uploadedUrls[0],
                 tags: products.tags.split(",").map(t => t.trim()).filter(Boolean),
@@ -151,15 +168,12 @@ export const AddProductPage = () => {
         }
     };
 
-    const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12];
-
     if (loading) return <Loader />;
 
     return (
         <div className="min-h-screen bg-white py-12 px-4">
             <div className="max-w-6xl mx-auto">
 
-                {/* Header */}
                 <div className="mb-10">
                     <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-rose-400 mb-1">Admin Panel</p>
                     <h1 className="text-4xl font-serif italic text-gray-900">Add New Product</h1>
@@ -249,31 +263,11 @@ export const AddProductPage = () => {
                             </div>
                         </div>
 
-                        {/* Discount badge (auto calculated) */}
                         {products.discount > 0 && (
                             <p className="text-green-600 text-xs font-bold ml-2">
                                 ✅ {products.discount}% discount auto-calculated
                             </p>
                         )}
-
-                        {/* Stock */}
-                        <div>
-                            <div className="relative">
-                                <input
-                                    type="number"
-                                    placeholder="Stock Quantity"
-                                    value={products.stock}
-                                    onChange={(e) => {
-                                        setProducts({ ...products, stock: e.target.value });
-                                        setErrors(p => ({ ...p, stock: "" }));
-                                    }}
-                                    className={`w-full bg-white border px-10 py-3 rounded-2xl outline-none focus:ring-2 focus:ring-rose-200 placeholder:text-gray-300 transition-all
-                                        ${errors.stock ? "border-red-400" : "border-rose-100"}`}
-                                />
-                                <Package className="absolute left-3 top-3.5 text-rose-300" size={18} />
-                            </div>
-                            {errors.stock && <p className="text-red-500 text-xs mt-1 ml-2">{errors.stock}</p>}
-                        </div>
 
                         {/* Category + Gender */}
                         <div className="flex gap-3">
@@ -313,24 +307,101 @@ export const AddProductPage = () => {
                             </div>
                         </div>
 
-                        {/* Sizes */}
+                        {/* ✅ Size + Quantity Manager */}
                         <div>
-                            <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-2 ml-1">Available Sizes</p>
-                            <div className="flex flex-wrap gap-2">
-                                {sizeOptions.map(size => (
-                                    <button
-                                        key={size}
-                                        type="button"
-                                        onClick={() => toggleSize(size)}
-                                        className={`w-10 h-10 rounded-xl text-sm font-bold border transition-all
-                                            ${products.sizes.includes(size)
-                                                ? "bg-gray-900 text-white border-gray-900"
-                                                : "bg-white text-gray-500 border-rose-100 hover:border-rose-400"}`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400 ml-1">
+                                    Sizes & Quantity
+                                </p>
+                                {totalStock > 0 && (
+                                    <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">
+                                        Total Stock: {totalStock}
+                                    </span>
+                                )}
                             </div>
+
+                            {/* Size toggle buttons */}
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {sizeOptions.map(size => {
+                                    const isSelected = products.sizeInventory[size] !== undefined;
+                                    return (
+                                        <button
+                                            key={size}
+                                            type="button"
+                                            onClick={() => {
+                                                toggleSize(size);
+                                                setErrors(p => ({ ...p, sizes: "" }));
+                                            }}
+                                            className={`w-10 h-10 rounded-xl text-sm font-bold border transition-all
+                                                ${isSelected
+                                                    ? "bg-gray-900 text-white border-gray-900"
+                                                    : "bg-white text-gray-500 border-rose-100 hover:border-rose-400"
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* ✅ Quantity controls for selected sizes */}
+                            <AnimatePresence>
+                                {Object.keys(products.sizeInventory).length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className="bg-white rounded-2xl border border-rose-100 p-4 space-y-3"
+                                    >
+                                        <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400">
+                                            Set quantity per size
+                                        </p>
+                                        {Object.entries(products.sizeInventory)
+                                            .sort(([a], [b]) => Number(a) - Number(b))
+                                            .map(([size, qty]) => (
+                                                <div key={size} className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="w-8 h-8 bg-gray-900 text-white text-xs font-bold rounded-lg flex items-center justify-center">
+                                                            {size}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500 font-medium">UK Size {size}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {/* Qty control */}
+                                                        <div className="flex items-center border border-rose-100 rounded-full px-2 py-1 gap-1 bg-rose-50/50">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => updateSizeQty(Number(size), -1)}
+                                                                className="p-1 hover:text-rose-500 transition-colors"
+                                                            >
+                                                                <Minus size={12} />
+                                                            </button>
+                                                            <span className="w-8 text-center text-sm font-bold text-gray-900">
+                                                                {qty}
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => updateSizeQty(Number(size), 1)}
+                                                                className="p-1 hover:text-rose-500 transition-colors"
+                                                            >
+                                                                <Plus size={12} />
+                                                            </button>
+                                                        </div>
+                                                        {/* Stock badge */}
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full
+                                                            ${qty > 10 ? "bg-green-100 text-green-600"
+                                                            : qty > 3 ? "bg-amber-100 text-amber-600"
+                                                            : "bg-red-100 text-red-500"}`}
+                                                        >
+                                                            {qty > 10 ? "In Stock" : qty > 3 ? "Low" : "Critical"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        }
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                             {errors.sizes && <p className="text-red-500 text-xs mt-1 ml-2">{errors.sizes}</p>}
                         </div>
 
@@ -405,7 +476,6 @@ export const AddProductPage = () => {
                             />
                             {errors.images && <p className="text-red-500 text-xs mt-1 ml-2">{errors.images}</p>}
 
-                            {/* Image previews */}
                             <AnimatePresence>
                                 {imagePreviews.length > 0 && (
                                     <motion.div
@@ -422,7 +492,6 @@ export const AddProductPage = () => {
                                                 className="relative w-16 h-16 rounded-xl overflow-hidden border border-rose-100"
                                             >
                                                 <img src={src} alt="" className="w-full h-full object-cover" />
-                                                {/* First image = thumbnail badge */}
                                                 {i === 0 && (
                                                     <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-rose-500 text-white font-bold py-0.5">
                                                         COVER
@@ -491,19 +560,32 @@ export const AddProductPage = () => {
                                         </span>
                                     )}
                                 </div>
-                                {products.sizes.length > 0 && (
-                                    <div className="flex gap-1 flex-wrap pt-1">
-                                        {products.sizes.map(s => (
-                                            <span key={s} className="text-xs border border-gray-200 px-2 py-0.5 rounded-lg text-gray-500">
-                                                {s}
-                                            </span>
-                                        ))}
+
+                                {/* ✅ Live preview of sizes with qty */}
+                                {Object.keys(products.sizeInventory).length > 0 && (
+                                    <div className="pt-2">
+                                        <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-1">Sizes</p>
+                                        <div className="flex gap-1 flex-wrap">
+                                            {Object.entries(products.sizeInventory)
+                                                .sort(([a], [b]) => Number(a) - Number(b))
+                                                .map(([size, qty]) => (
+                                                    <div key={size} className="flex flex-col items-center">
+                                                        <span className="text-xs border border-gray-200 px-2 py-0.5 rounded-lg text-gray-600 font-bold">
+                                                            {size}
+                                                        </span>
+                                                        <span className="text-[9px] text-gray-400 mt-0.5">x{qty}</span>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 mt-2">
+                                            Total Stock: <span className="font-bold text-gray-600">{totalStock}</span>
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </motion.div>
-
                 </div>
             </div>
         </div>

@@ -9,10 +9,10 @@ export const MyState = ({ children }) => {
     const [getAllProduct, setAllProduct] = useState([]);
     const [cart, setCart] = useState([]);
 
-    // ✅ Get logged in user from cookie
+    
     const user = JSON.parse(Cookies.get("users") || "null");
 
-    // ✅ Load cart from Firestore on login
+   
     useEffect(() => {
         const loadCart = async () => {
             if (!user?.uid) return;
@@ -102,7 +102,7 @@ export const MyState = ({ children }) => {
                 setLoading(false);
             });
 
-            return unsubscribe; // ✅ proper cleanup
+            return unsubscribe; 
         } catch (error) {
             console.error(error);
             setLoading(false);
@@ -111,7 +111,7 @@ export const MyState = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = getAllProductFunction();
-        return () => unsubscribe && unsubscribe(); // ✅ cleanup on unmount
+        return () => unsubscribe && unsubscribe(); 
     }, []);
 
     return (

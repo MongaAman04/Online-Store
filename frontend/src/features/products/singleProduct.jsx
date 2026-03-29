@@ -1,138 +1,387 @@
-import { NavLink, useParams } from "react-router-dom"
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import MyContext from "../context/mycontext";
 import { doc, getDoc } from "firebase/firestore";
 import { Firedb } from "../../config/firebaseConfig";
-import { Star, ShieldCheck, Truck, RotateCcw } from "lucide-react";
-import { motion } from "framer-motion";
+import { Star, ShieldCheck, Truck, RotateCcw, ChevronLeft, Heart, Share2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 
 export const SingleProduct = () => {
     const { id } = useParams();
-    const { loading, setLoading } = useContext(MyContext);
-    const [product, setProduct] = useState({
-        title: "Nike Air Force 1 '07 LV8",
-        price: 12499,
-        image: "https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/54a510de-a406-41b2-8d62-7f8c587c9a7e/air-force-1-07-lv8-shoes-9KwrSk.png",
-        category: "shoes",
-        description: "The radiance lives on in the Nike Air Force 1 '07 LV8...",
-        quantity: 10
-    });
+    const navigate = useNavigate();
+    const { loading, setLoading, cart, addToCart, deleteFromCart } = useContext(MyContext);
 
-    // const getSingleProductFunction = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const getitem = await getDoc(doc(Firedb, "products", id));
-    //         if (getitem.exists()) {
-    //             setProduct(getitem.data());
-    //         }
-    //         setLoading(false);
-    //     } catch (error) {
-    //         setLoading(false);
-    //         console.error(error);
-    //     }
-    // };
+    const [product, setProduct] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [wishlist, setWishlist] = useState(false);
 
-    // useEffect(() => {
-    //     getSingleProductFunction();
-    // }, [id]);
+    const isInCart = cart.some(p => p.id === id && p.selectedSize === selectedSize);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-            <div className="w-64 h-64 bg-rose-50 rounded-3xl" />
-            <div className="h-4 w-48 bg-rose-50 rounded" />
+    useEffect(() => {
+        const getSingleProduct = async () => {
+            setLoading(true);
+            try {
+                const docSnap = await getDoc(doc(Firedb, "products", id));
+                if (docSnap.exists()) {
+                    setProduct({ id: docSnap.id, ...docSnap.data() });
+                } else {
+                    toast.error("Product not found.");
+                    navigate("/products");
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("Failed to load product.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        getSingleProduct();
+    }, [id]);
+
+
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            toast.error("Please select a size first.");
+            return;
+        }
+        const cartItem = {
+            ...product,
+            selectedSize,
+            quantity: 1,
+            id: `${product.id}_${selectedSize}`,
+            productId: product.id,
+        };
+        addToCart(cartItem);
+        toast.success(`Size ${selectedSize} added to bag!`);
+    };
+
+    const handleRemoveFromCart = () => {
+        deleteFromCart({ id: `${product.id}_${selectedSize}` });
+        toast("Removed from bag 🛍️");
+    };
+    const handleBuyNow = () => {
+        if (!selectedSize) {
+            toast.error("Please select a size first.");
+            return;
+        }
+        const orderItem = {
+            ...product,
+            selectedSize,
+            quantity: 1,
+            id: `${product.id}_${selectedSize}`,
+            productId: product.id,
+        };
+
+        sessionStorage.setItem("buyNowItem", JSON.stringify(orderItem));
+        navigate("/placeorder");
+    };
+    const selectedSizeStock = selectedSize
+        ? product?.sizeInventory?.[selectedSize] ?? 0
+        : null;
+
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-pulse flex flex-col lg:flex-row gap-12 max-w-7xl w-full px-6">
+                <div className="w-full lg:w-1/2 aspect-square bg-rose-50 rounded-[3rem]" />
+                <div className="w-full lg:w-1/2 space-y-6 py-8">
+                    <div className="h-4 w-24 bg-rose-50 rounded" />
+                    <div className="h-10 w-3/4 bg-gray-100 rounded" />
+                    <div className="h-6 w-1/3 bg-gray-100 rounded" />
+                    <div className="h-24 bg-gray-50 rounded-2xl" />
+                </div>
+            </div>
         </div>
-    </div>;
+    );
 
     if (!product) return null;
 
+    const images = product.images?.length > 0 ? product.images : [product.thumbnail];
+    const availableSizes = product.sizeInventory
+        ? Object.entries(product.sizeInventory).sort(([a], [b]) => Number(a) - Number(b))
+        : [];
+
     return (
-        <section className="py-12 lg:py-24 bg-white">
+        <section className="py-12 lg:py-20 bg-white">
             <div className="max-w-7xl px-6 mx-auto">
+
+                {/* ── Back button ── */}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors mb-8 text-sm font-medium"
+                >
+                    <ChevronLeft size={18} /> Back
+                </button>
+
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
 
-                    {/* --- Product Image Visual --- */}
+                    {/* ── Image Gallery ── */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="w-full lg:w-1/2"
                     >
-                        <div className="sticky top-24 group relative bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100 aspect-square flex items-center justify-center p-8">
-                            <img
-                                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
-                                src={product.image}
-                                alt={product.title}
-                            />
-                            <div className="absolute bottom-8 left-8 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm">
-                                Premium Edition
+                        <div className="sticky top-24 space-y-4">
+                            {/* Main Image */}
+                            <div className="group relative bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100 aspect-square flex items-center justify-center p-8">
+                                <AnimatePresence mode="wait">
+                                    <motion.img
+                                        key={selectedImage}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                                        src={images[selectedImage]}
+                                        alt={product.name}
+                                    />
+                                </AnimatePresence>
+
+                                {/* Discount badge */}
+                                {product.discount > 0 && (
+                                    <div className="absolute top-6 left-6 bg-rose-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full">
+                                        {product.discount}% OFF
+                                    </div>
+                                )}
+
+                                {/* Share */}
+
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        toast.success("Link copied!");
+                                    }}
+                                    className="absolute top-6 right-6 w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                                >
+                                    <Share2 size={18} />
+                                </button>
+
+                                <div className="absolute bottom-6 left-6 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                                    {product.brand || "Premium Edition"}
+                                </div>
                             </div>
+
+                            {/* ✅ Thumbnail strip */}
+                            {images.length > 1 && (
+                                <div className="flex gap-3 justify-center">
+                                    {images.map((img, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => setSelectedImage(i)}
+                                            className={`w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all
+                                                ${selectedImage === i
+                                                    ? "border-gray-900 scale-105"
+                                                    : "border-gray-100 hover:border-rose-300"
+                                                }`}
+                                        >
+                                            <img src={img} alt="" className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </motion.div>
 
-                    {/* --- Product Content --- */}
+                    {/* ── Product Info ── */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="w-full lg:w-1/2 flex flex-col justify-center"
                     >
                         <div className="space-y-6">
+
+                            {/* Category + Gender */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">
+                                    {product.category}
+                                </span>
+                                {product.gender && (
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        · {product.gender}
+                                    </span>
+                                )}
+                            </div>
+
                             {/* Rating & Title */}
                             <div className="space-y-2">
                                 <div className="flex items-center gap-1 text-amber-400">
-                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                                    <span className="text-gray-400 text-xs font-medium ml-2">(48 Reviews)</span>
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            size={14}
+                                            fill={i < Math.floor(product.rating || 0) ? "currentColor" : "none"}
+                                        />
+                                    ))}
+                                    <span className="text-gray-400 text-xs font-medium ml-2">
+                                        ({product.totalReviews || 0} Reviews)
+                                    </span>
                                 </div>
                                 <h1 className="text-4xl md:text-5xl font-serif italic text-gray-900 leading-tight">
-                                    {product.title}
+                                    {product.name}
                                 </h1>
                             </div>
 
                             {/* Price */}
                             <div className="flex items-baseline gap-4">
-                                <span className="text-3xl font-bold text-rose-500">₹{product.price}</span>
-                                <span className="text-gray-400 line-through text-lg">₹{Math.round(product.price * 1.2)}</span>
+                                <span className="text-3xl font-bold text-rose-500">
+                                    ₹{product.price?.toLocaleString()}
+                                </span>
+                                {product.originalPrice && (
+                                    <span className="text-gray-400 line-through text-lg">
+                                        ₹{product.originalPrice?.toLocaleString()}
+                                    </span>
+                                )}
+                                {product.discount > 0 && (
+                                    <span className="text-green-600 text-sm font-bold">
+                                        {product.discount}% off
+                                    </span>
+                                )}
                             </div>
 
                             {/* Description */}
-                            <p className="text-gray-600 leading-relaxed font-light text-lg">
-                                {product.description || "Indulge in the perfect blend of heritage and modern craftsmanship. These sneakers feature premium materials designed for long-lasting comfort and undeniable style."}
+                            <p className="text-gray-600 leading-relaxed font-light text-base">
+                                {product.description}
                             </p>
 
                             <hr className="border-gray-100" />
 
+                            {/* ✅ Size Selector with stock awareness */}
+                            {availableSizes.length > 0 && (
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <p className="text-sm font-bold text-gray-900 uppercase tracking-widest">
+                                            Select Size (UK)
+                                        </p>
+                                        {selectedSize && selectedSizeStock !== null && (
+                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full
+                                                ${selectedSizeStock > 10 ? "bg-green-100 text-green-600"
+                                                    : selectedSizeStock > 3 ? "bg-amber-100 text-amber-600"
+                                                        : selectedSizeStock > 0 ? "bg-red-100 text-red-500"
+                                                            : "bg-gray-100 text-gray-400"}`}
+                                            >
+                                                {selectedSizeStock > 10 ? `${selectedSizeStock} in stock`
+                                                    : selectedSizeStock > 0 ? `Only ${selectedSizeStock} left!`
+                                                        : "Out of stock"}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap gap-3">
+                                        {availableSizes.map(([size, qty]) => {
+                                            const outOfStock = qty === 0;
+                                            const isSelected = selectedSize === Number(size);
+                                            return (
+                                                <button
+                                                    key={size}
+                                                    type="button"
+                                                    disabled={outOfStock}
+                                                    onClick={() => setSelectedSize(Number(size))}
+                                                    className={`w-12 h-12 rounded-xl text-sm font-bold border-2 transition-all relative
+                                                        ${outOfStock
+                                                            ? "border-gray-100 text-gray-300 cursor-not-allowed line-through"
+                                                            : isSelected
+                                                                ? "border-gray-900 bg-gray-900 text-white scale-110 shadow-lg"
+                                                                : "border-gray-200 text-gray-700 hover:border-rose-400"
+                                                        }`}
+                                                >
+                                                    {size}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {!selectedSize && (
+                                        <p className="text-gray-400 text-xs mt-2">
+                                            Select a size to add to bag
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Tags */}
+                            {product.tags?.length > 0 && (
+                                <div className="flex flex-wrap gap-2">
+                                    {product.tags.map((tag, i) => (
+                                        <span key={i} className="text-[10px] bg-gray-100 text-gray-500 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+
                             {/* Trust Badges */}
                             <div className="grid grid-cols-3 gap-4 py-4">
-                                <div className="text-center space-y-2">
-                                    <div className="mx-auto w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                                        <Truck size={18} />
+                                {[
+                                    { icon: <Truck size={18} />, label: "Fast Delivery" },
+                                    { icon: <ShieldCheck size={18} />, label: "Authentic" },
+                                    { icon: <RotateCcw size={18} />, label: "14 Day Return" },
+                                ].map(({ icon, label }) => (
+                                    <div key={label} className="text-center space-y-2">
+                                        <div className="mx-auto w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                                            {icon}
+                                        </div>
+                                        <p className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">{label}</p>
                                     </div>
-                                    <p className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">Fast Delivery</p>
-                                </div>
-                                <div className="text-center space-y-2">
-                                    <div className="mx-auto w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                                        <ShieldCheck size={18} />
-                                    </div>
-                                    <p className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">Authentic</p>
-                                </div>
-                                <div className="text-center space-y-2">
-                                    <div className="mx-auto w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                                        <RotateCcw size={18} />
-                                    </div>
-                                    <p className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">14 Day Return</p>
-                                </div>
+                                ))}
                             </div>
 
-                            {/* Actions */}
-                            <div className="pt-6">
-                                <NavLink to={`/product/${id}/${encodeURIComponent(product.title)}`}>
+
+                            <div className="flex w-full justify-between pt-2 gap-2">
+                                <AnimatePresence mode="wait">
                                     <motion.button
+                                        key="buy"
+                                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className="w-full md:w-auto px-12 py-5 bg-gray-900 text-white rounded-full font-bold tracking-[0.2em] uppercase text-xs shadow-2xl shadow-gray-200 hover:bg-rose-500 transition-colors"
+                                        onClick={handleBuyNow}
+                                        className="w-2xs py-4 bg-rose-500 text-white rounded-full font-bold tracking-widest text-sm hover:bg-gray-900 transition-colors shadow-xl shadow-gray-200"
                                     >
-                                        Proceed to Order
+                                        Buy Now
                                     </motion.button>
-                                </NavLink>
+
+                                </AnimatePresence>
+
+                                <AnimatePresence mode="wait">
+                                    {isInCart ? (
+                                        <motion.button
+                                            key="remove"
+                                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                            onClick={handleRemoveFromCart}
+                                            className="w-2xs py-4 border-2 border-rose-300 text-rose-500 rounded-full font-bold tracking-widest text-xs hover:bg-rose-50 transition-colors"
+                                        >
+                                            REMOVE FROM BAG
+                                        </motion.button>
+                                    ) : (
+                                        <motion.button
+                                            key="add"
+                                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={handleAddToCart}
+                                            className="w-2xs py-4 bg-gray-900 text-white rounded-full font-bold tracking-widest text-xs hover:bg-rose-500 transition-colors shadow-xl shadow-gray-200"
+                                        >
+                                            ADD TO BAG
+                                        </motion.button>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Share button */}
+
+
                             </div>
+                            {/* Go to cart CTA */}
+                            {isInCart && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                >
+                                    <button
+                                        onClick={() => navigate("/cart")}
+                                        className="w-full py-3 border border-gray-200 rounded-full text-xs font-bold tracking-widest uppercase text-gray-600 hover:bg-gray-50 transition-colors"
+                                    >
+                                        VIEW BAG →
+                                    </button>
+                                </motion.div>
+                            )}
                         </div>
                     </motion.div>
                 </div>

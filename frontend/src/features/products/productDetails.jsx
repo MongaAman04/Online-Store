@@ -5,10 +5,11 @@ import { Firedb } from "../../config/firebaseConfig";
 import MyContext from "../context/mycontext";
 import Loader from "../../componets/loader";
 import toast from "react-hot-toast";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const ProductList = () => {
   const { cart, addToCart, deleteFromCart } = useContext(MyContext);
-
+  const navigate = useNavigate()
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +34,9 @@ export const ProductList = () => {
 
     return () => unsubscribe(); // ✅ Cleanup listener on unmount
   }, []);
-
+  const handleOnclick = (id)=>{
+      navigate(`/productdetails/${id}`)
+  }
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
@@ -82,6 +85,7 @@ export const ProductList = () => {
                 <motion.div
                   key={id}
                   variants={cardVariants}
+                  onClick={()=>handleOnclick(id)}
                   className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
                 >
                   <div className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-rose-50/50">
