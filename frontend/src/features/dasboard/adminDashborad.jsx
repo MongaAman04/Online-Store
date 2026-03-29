@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-    ShoppingBasket, ListOrdered, Users, LayoutDashboard, 
-    UserCircle, Menu, X, ChevronRight, LogOut, PackageSearch, 
+import {
+    ShoppingBasket, ListOrdered, Users, LayoutDashboard,
+    UserCircle, Menu, X, ChevronRight, LogOut, PackageSearch,
     Replace
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,13 +12,14 @@ import Cookies from "js-cookie";
 import { InventoryManager } from "./view/inventory-manager";
 import { OrderManagement } from "./view/order-manager";
 import { ReturnManagement } from "./view/retrun-orders";
+import { Link } from "react-router-dom";
 
 
 export const AdminDashBoard = () => {
     const [activeSection, setActiveSection] = useState("dashboard");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [counts, setCounts] = useState({ products: 0, orders: 0, users: 0 });
-    
+
     const user = JSON.parse(Cookies.get("users") || "null") || { name: "Admin", email: "admin@pksluxe.com" };
 
     useEffect(() => {
@@ -49,7 +50,7 @@ export const AdminDashBoard = () => {
 
     return (
         <div className="min-h-screen bg-[#FDFCFB] flex">
-            
+
             {/* --- DESKTOP SIDEBAR --- */}
             <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-gray-100 sticky top-0 h-screen p-6">
                 <div className="flex items-center gap-3 mb-12 px-2">
@@ -64,11 +65,10 @@ export const AdminDashBoard = () => {
                         <button
                             key={item.id}
                             onClick={() => setActiveSection(item.id)}
-                            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${
-                                activeSection === item.id 
-                                ? "bg-rose-50 text-rose-600 shadow-sm" 
-                                : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
-                            }`}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${activeSection === item.id
+                                    ? "bg-rose-50 text-rose-600 shadow-sm"
+                                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                                }`}
                         >
                             <div className="flex items-center gap-3">
                                 {item.icon}
@@ -89,7 +89,7 @@ export const AdminDashBoard = () => {
 
             {/* --- MAIN CONTENT AREA --- */}
             <main className="flex-1 flex flex-col">
-                
+
                 {/* Mobile Header */}
                 <header className="lg:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-40">
                     <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export const AdminDashBoard = () => {
                 <div className="p-6 md:p-10 max-w-7xl w-full mx-auto">
                     <AnimatePresence mode="wait">
                         {activeSection === "dashboard" && (
-                            <motion.div initial={{opacity:0, y:10}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-10}}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                                 <Header user={user} />
                                 <StatsGrid counts={counts} />
                             </motion.div>
@@ -116,7 +116,7 @@ export const AdminDashBoard = () => {
                         {activeSection === "inventory" && <InventoryManager />}
                         {activeSection === "orders" && <OrderManagement />}
                         {activeSection === "replace" && <ReturnManagement />}
-                        
+
                         {activeSection === "users" && (
                             <div className="h-96 border-2 border-dashed border-gray-200 rounded-[3rem] flex items-center justify-center text-gray-400 font-serif italic">
                                 Client Database Section (Coming Soon)
@@ -126,16 +126,16 @@ export const AdminDashBoard = () => {
                 </div>
             </main>
 
-            {/* --- MOBILE OVERLAY MENU --- */}
+
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 lg:hidden"
                         />
-                        <motion.div 
+                        <motion.div
                             initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
                             className="fixed right-0 top-0 bottom-0 w-72 bg-white z-[60] p-8 lg:hidden shadow-2xl"
                         >
@@ -144,8 +144,8 @@ export const AdminDashBoard = () => {
                             </button>
                             <div className="mt-12 space-y-6">
                                 {menuItems.map(item => (
-                                    <button 
-                                        key={item.id} 
+                                    <button
+                                        key={item.id}
                                         onClick={() => { setActiveSection(item.id); setIsMobileMenuOpen(false); }}
                                         className={`flex items-center gap-4 text-lg font-bold ${activeSection === item.id ? "text-rose-500" : "text-gray-400"}`}
                                     >
@@ -168,23 +168,21 @@ const Header = ({ user }) => (
             <h1 className="text-3xl font-serif italic font-bold text-gray-900">Good Morning, {user.name.split(' ')[0]}</h1>
             <p className="text-gray-400 text-sm mt-1">Here is what's happening in your boutique today.</p>
         </div>
-        <div className="flex items-center gap-3 bg-white p-2 pr-6 rounded-full border border-gray-100 shadow-sm">
-            <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                {user.name.charAt(0)}
-            </div>
-            <div className="flex flex-col">
-                <span className="text-xs font-bold text-gray-900 leading-tight">{user.name}</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-tighter">Owner</span>
-            </div>
-        </div>
+
+        <Link to={'/addproduct'}>
+            <button className="flex flex-col py-3 px-4 font-bold bg-rose-500 text-white rounded-2xl">
+                Add New Product
+            </button>
+        </Link>
+
     </div>
 );
 
 const StatsGrid = ({ counts }) => (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <StatCard label="Products" value={counts.products} icon={<ShoppingBasket/>} color="text-blue-600" bg="bg-blue-50" />
-        <StatCard label="Orders" value={counts.orders} icon={<ListOrdered/>} color="text-rose-600" bg="bg-rose-50" />
-        <StatCard label="Users" value={counts.users} icon={<Users/>} color="text-amber-600" bg="bg-amber-50" />
+        <StatCard label="Products" value={counts.products} icon={<ShoppingBasket />} color="text-blue-600" bg="bg-blue-50" />
+        <StatCard label="Orders" value={counts.orders} icon={<ListOrdered />} color="text-rose-600" bg="bg-rose-50" />
+        <StatCard label="Users" value={counts.users} icon={<Users />} color="text-amber-600" bg="bg-amber-50" />
     </div>
 );
 

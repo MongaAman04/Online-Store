@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Package, Calendar, CreditCard, ChevronRight, RefreshCw, ShoppingBag, MapPin, Clock } from "lucide-react";
+import { LogOut, Package, Calendar, CreditCard, ChevronRight, RefreshCw, ShoppingBag, MapPin, Clock, User2Icon } from "lucide-react";
 import Cookies from "js-cookie";
 import { collection, onSnapshot, orderBy, query, where,addDoc,Timestamp } from "firebase/firestore";
 import { Firedb } from "../../config/firebaseConfig";
@@ -124,11 +124,12 @@ const handleReplace = async (order, item, type = "replace") => {
                 >
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
                         <div className="h-32 w-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex-shrink-0">
-                            <img
+                            {/* <img
                                 src="https://cdn-icons-png.flaticon.com/128/2202/2202112.png"
                                 alt="User Profile"
                                 className="h-full w-full object-cover"
-                            />
+                            /> */}
+                           
                         </div>
                         <div className="text-center md:text-left flex-1">
                             <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-rose-500 mb-2">Member Profile</h2>
