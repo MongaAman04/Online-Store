@@ -10,7 +10,7 @@ export const MyState = ({ children }) => {
     const [cart, setCart] = useState([]);
 
     
-    const user = JSON.parse(Cookies.get("users") || "null");
+    const user = JSON.parse(Cookies.get("hos_users") || "null");
 
    
     useEffect(() => {

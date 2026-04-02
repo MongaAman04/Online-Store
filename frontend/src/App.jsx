@@ -18,6 +18,7 @@ import { Contact } from './pages/contact/contact';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Applayout from './componets/applayout';
 import { ProductList } from './features/products/productDetails';
+import { Car } from 'lucide-react';
 
 const router = createBrowserRouter([
   {
@@ -54,23 +55,25 @@ const router = createBrowserRouter([
       },
       {
         path:'/addproduct',
-        element:<AddProductPage />,
+        element:<AdminRoute><AddProductPage /></AdminRoute>,
       },
       {
         path:'/profile/user',
-        element:<Userpage />,
+        element:<UserRoute><Userpage /></UserRoute>,
       },
       {
         path:'/profile/admin',
-        element:<AdminDashBoard />,
+        element:<AdminRoute>
+          <AdminDashBoard />
+          </AdminRoute>
       },
       {
         path:'/cart',
-        element:<Cart />,
+        element:<UserRoute><Cart /></UserRoute>,
       },
       {
         path:'/placeorder',
-        element:<OrderForm />,
+        element:<UserRoute><OrderForm /></UserRoute>,
       },
     ]
 

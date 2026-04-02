@@ -8,20 +8,24 @@ import { useEffect, useState } from "react";
 import { collection, getCountFromServer } from "firebase/firestore";
 import { Firedb } from "../../config/firebaseConfig";
 import Cookies from "js-cookie";
-
+import toast from "react-hot-toast";
 import { InventoryManager } from "./view/inventory-manager";
 import { OrderManagement } from "./view/order-manager";
 import { ReturnManagement } from "./view/retrun-orders";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export const AdminDashBoard = () => {
     const [activeSection, setActiveSection] = useState("dashboard");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [counts, setCounts] = useState({ products: 0, orders: 0, users: 0 });
-
-    const user = JSON.parse(Cookies.get("users") || "null") || { name: "Admin", email: "admin@pksluxe.com" };
-
+    const navigate = useNavigate();
+    const user = JSON.parse(Cookies.get("hos_users") || "null") || { name: "Admin", email: "admin@pksluxe.com" };
+    const handleLogout = () => {
+        Cookies.remove("hos_users");
+        navigate("/login");
+        toast.success("Logged out successfully!");
+    };
     useEffect(() => {
         const fetchCounts = async () => {
             try {
@@ -66,8 +70,8 @@ export const AdminDashBoard = () => {
                             key={item.id}
                             onClick={() => setActiveSection(item.id)}
                             className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 ${activeSection === item.id
-                                    ? "bg-rose-50 text-rose-600 shadow-sm"
-                                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                                ? "bg-rose-50 text-rose-600 shadow-sm"
+                                : "text-gray-400 hover:bg-gray-50 hover:text-gray-600"
                                 }`}
                         >
                             <div className="flex items-center gap-3">
@@ -80,7 +84,7 @@ export const AdminDashBoard = () => {
                 </nav>
 
                 <div className="pt-6 border-t border-gray-50">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 transition-colors">
+                    <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-red-500 transition-colors">
                         <LogOut size={20} />
                         <span className="text-sm font-bold">Sign Out</span>
                     </button>
