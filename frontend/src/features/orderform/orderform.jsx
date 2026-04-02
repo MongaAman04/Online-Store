@@ -16,7 +16,7 @@ export const OrderForm = () => {
     const sessionCart = JSON.parse(sessionStorage.getItem("orderItems") || "null");
     const orderItems = buyNowItem ? [buyNowItem] : (sessionCart || cart);
 
-    const user = JSON.parse(Cookies.get("users") || "null");
+    const user = JSON.parse(Cookies.get("hos_users") || "null");
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});

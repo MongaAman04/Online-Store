@@ -111,7 +111,7 @@ const Signup = () => {
 
             const UserRef = collection(Firedb, "user");
             await addDoc(UserRef, user);
-            Cookies.set("users", JSON.stringify(user), { expires: 15 });
+            Cookies.set("hos_users", JSON.stringify(user), { expires: 15 });
             setUserSignUp({ name: "", email: "", password: "", phone: "", role: "user" });
             setErrors({ name: "", email: "", password: "", phone: "" });
             setLoading(false);

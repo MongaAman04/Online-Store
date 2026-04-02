@@ -16,10 +16,10 @@ export const About = () => {
           variants={fadeUp}
           className="text-center z-10 px-6"
         >
-          <h4 className="text-rose-500 uppercase tracking-[0.3em] text-xs font-bold mb-4">Established 2024</h4>
+          <h4 className="text-rose-500 uppercase tracking-[0.3em] text-xs font-bold mb-4">Established 2025</h4>
           <h1 className="text-5xl md:text-7xl font-serif italic text-gray-900">Defining Every Step.</h1>
           <p className="mt-6 text-gray-600 max-w-xl mx-auto font-light leading-relaxed">
-            PKS was born from a simple belief: that every woman deserves to walk with the grace of a queen and the comfort of a cloud.
+            House of Sole was born from a simple belief: that every woman deserves to walk with the grace of a queen and the comfort of a cloud.
           </p>
         </motion.div>
         {/* Decorative background element */}
@@ -50,7 +50,7 @@ export const About = () => {
         >
           <h2 className="text-4xl font-serif text-gray-800">Our Philosophy</h2>
           <p className="text-gray-600 leading-relaxed">
-            At PKS, we don’t just design footwear; we curate experiences. Our designers focus on the "Three C's": <strong>Chic, Confident, and Comfortable.</strong> 
+            At HOS, we don’t just design footwear; we curate experiences. Our designers focus on the "Three C's": <strong>Chic, Confident, and Comfortable.</strong> 
           </p>
           <p className="text-gray-600 leading-relaxed">
             Each pair is meticulously handcrafted using premium materials, ensuring that from the morning boardroom to the midnight gala, your style never wavers.
@@ -68,7 +68,7 @@ export const About = () => {
       {/* 3. The PKS Promise (Grid) */}
       <section className="bg-gray-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-serif italic mb-16">The PKS Promise</h2>
+          <h2 className="text-3xl font-serif italic mb-16">The HOS Promise</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               { title: "Empowerment", desc: "Designed by women, for women, to fuel your ambition." },

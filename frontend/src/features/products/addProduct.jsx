@@ -19,7 +19,7 @@ const categoryList = [
 ];
 
 const genderList = ["men", "women", "unisex", "kids"];
-const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12];
+const sizeOptions = [3,4,5, 6, 7, 8, 9, 10, 11];
 
 export const AddProductPage = () => {
     const { loading, setLoading } = useContext(MyContext);
@@ -35,8 +35,6 @@ export const AddProductPage = () => {
         price: "",
         originalPrice: "",
         discount: 0,
-        // ✅ sizeInventory replaces flat stock & sizes
-        // { 6: 10, 7: 5, 8: 0 } etc.
         sizeInventory: {},
         images: [],
         thumbnail: "",
@@ -55,24 +53,23 @@ export const AddProductPage = () => {
     const [imagePreviews, setImagePreviews] = useState([]);
     const [errors, setErrors] = useState({});
 
-    // ✅ Toggle size — adds with qty 1, removes if toggled off
+    
     const toggleSize = (size) => {
         setProducts(prev => {
             const updated = { ...prev.sizeInventory };
             if (updated[size] !== undefined) {
-                delete updated[size]; // remove size
+                delete updated[size]; 
             } else {
-                updated[size] = 1;   // add size with default qty 1
+                updated[size] = 1;  
             }
             return { ...prev, sizeInventory: updated };
         });
     };
 
-    // ✅ Update quantity for a specific size
     const updateSizeQty = (size, delta) => {
         setProducts(prev => {
             const current = prev.sizeInventory[size] ?? 1;
-            const newQty = Math.max(1, current + delta); // min qty = 1
+            const newQty = Math.max(1, current + delta); 
             return {
                 ...prev,
                 sizeInventory: { ...prev.sizeInventory, [size]: newQty }
@@ -80,7 +77,7 @@ export const AddProductPage = () => {
         });
     };
 
-    // ✅ Total stock = sum of all size quantities
+    
     const totalStock = Object.values(products.sizeInventory).reduce((a, b) => a + b, 0);
 
     const handleImageChange = (e) => {

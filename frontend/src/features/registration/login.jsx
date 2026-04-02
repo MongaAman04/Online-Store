@@ -66,7 +66,7 @@ const Login = () => {
         const data = onSnapshot(q, (QuerySnapshot) => {
           let user;
           QuerySnapshot.forEach(doc => user = doc.data());
-          Cookies.set("users", JSON.stringify(user), { expires: 15 });
+          Cookies.set("hos_users", JSON.stringify(user), { expires: 15 });
           setUserLogin({ email: "", password: "" });
           setErrors({ email: "", password: "" }); 
           toast.success(`Welcome Back ${user.name}!`);
@@ -91,7 +91,7 @@ const Login = () => {
       } else if (error.code === "auth/too-many-requests") {
         toast.error("Too many failed attempts. Please try again later.");
       } else if (error.code === "auth/invalid-credential") {
-        toast.error("Invalid credentials. Please check and try again.");
+        toast.error("Email or Password is incorrect. Please check and try again.");
       } else {
         toast.error("Login failed. Please try again.");
       }

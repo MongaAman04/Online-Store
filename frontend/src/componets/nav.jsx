@@ -1,28 +1,30 @@
-import { Link, NavLink } from "react-router-dom";
-import { FaShoppingCart, FaSearch, FaRegHeart } from "react-icons/fa";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { FaShoppingCart } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Cookies from "js-cookie";
 import { User } from "lucide-react";
+
 export const Nav = () => {
-  const itemVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { opacity: 1, y: 0 }
-  };
-  const user = JSON.parse(Cookies.get("users") || "null");
+  const navigate = useNavigate();
+  const user = JSON.parse(Cookies.get("hos_users") || "null");
+
+  // Website-only styles
   const navLinkStyles = ({ isActive }) =>
     `relative py-1 transition-all duration-300 ${isActive ? "text-rose-600 font-semibold" : "text-gray-600 hover:text-rose-400"
     }`;
 
   return (
-    <nav className="max-w-7xl mx-auto flex justify-between items-center p-6">
+    <nav className="w-full bg-white z-50">
+      <div className="max-w-7xl mx-auto flex justify-between items-center p-6">
 
-      <a href="/">
-        <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer">
-          <h1 className="text-3xl font-serif tracking-tighter italic font-bold text-gray-900">
-            PKS<span className="text-rose-400 not-italic">.</span>
-          </h1>
-        </motion.div>
-      </a>
+        {/* --- LOGO (Shared) --- */}
+        <Link to="/">
+          <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer">
+            <h1 className="text-2xl md:text-3xl font-serif tracking-tighter italic font-bold text-gray-900">
+              House of Sole<span className="text-rose-400 not-italic">.</span>
+            </h1>
+          </motion.div>
+        </Link>
 
       {/* Navigation Links with Staggered Fade-in */}
       <ul className="hidden md:flex gap-10 font-light uppercase text-xs tracking-[0.2em]">
@@ -63,9 +65,7 @@ export const Nav = () => {
             <motion.div whileHover={{ scale: 1.2, color: "#e11d48" }} className="cursor-pointer">
               <NavLink to="/cart" className="relative">
                 <FaShoppingCart size={20} />
-                <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold">
-                  2
-                </span>
+                <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span>
               </NavLink>
             </motion.div>
             <motion.div
@@ -78,16 +78,47 @@ export const Nav = () => {
                 <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 transition-all duration-300 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-200">
                   <User size={22} strokeWidth={1.5} />
                 </span>
-
-               
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
               </NavLink>
-            </motion.div>
-          </div>
-      }
+            </div>
+          )}
+        </div>
 
+        {/* --- MOBILE USER ACTIONS (Only text, visible on Mobile only) --- */}
+        <div className="flex md:hidden items-center gap-4">
+          {!user ? (
+            <Link to="/signup" className="text-[10px] font-bold uppercase tracking-widest text-rose-500">
+              Sign In
+            </Link>
+          ) : (
+            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
+              <Link to="/cart" className="text-gray-600">   <FaShoppingCart size={20} />
+                <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span></Link>
+              <span className="text-gray-300">|</span>
+              <Link to={user.role === 'admin' ? '/profile/admin' : '/profile/user'} className="text-rose-500"> <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
+                <User size={22} strokeWidth={1.5} />
+              </span></Link>
+            </div>
+          )}
+        </div>
+      </div>
 
-
+      {/* --- MOBILE NAVIGATION LINKS (Visible on Mobile only, no icons) --- */}
+      <div className="md:hidden border-t border-gray-50 overflow-x-auto no-scrollbar">
+        <ul className="flex justify-between items-center px-6 py-3 gap-6">
+          {["Home", "Products", "About", "Contact"].map((item) => (
+            <li key={item} className="flex-shrink-0">
+              <NavLink
+                to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                className={({ isActive }) =>
+                  `text-[10px] uppercase tracking-[0.15em] ${isActive ? "text-rose-600 border-b border-rose-600" : "text-gray-500"}`
+                }
+              >
+                {item}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
-  )
-}
+  );
+};

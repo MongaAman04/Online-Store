@@ -17,7 +17,7 @@ const STATUS_STYLES = {
 
 export const Userpage = () => {
     const navigate = useNavigate();
-    const user = JSON.parse(Cookies.get("users") || "null") || { name: "Guest", email: "Not Available" };
+    const user = JSON.parse(Cookies.get("hos_users") || "null") || { name: "Guest", email: "Not Available" };
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -107,7 +107,7 @@ const handleReplace = async (order, item, type = "replace") => {
 };
 
     const handleLogout = () => {
-        Cookies.remove("users");
+        Cookies.remove("hos_users");
         navigate("/login");
         toast.success("Logged out successfully!");
     };

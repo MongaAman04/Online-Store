@@ -6,6 +6,7 @@ import { Firedb } from "../../config/firebaseConfig";
 import { Star, ShieldCheck, Truck, RotateCcw, ChevronLeft, Heart, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
+import { SizeChart } from "../../componets/sizeChart";
 
 export const SingleProduct = () => {
     const { id } = useParams();
@@ -16,7 +17,7 @@ export const SingleProduct = () => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedImage, setSelectedImage] = useState(0);
     const [wishlist, setWishlist] = useState(false);
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const isInCart = cart.some(p => p.id === id && p.selectedSize === selectedSize);
 
     useEffect(() => {
@@ -102,11 +103,41 @@ export const SingleProduct = () => {
         ? Object.entries(product.sizeInventory).sort(([a], [b]) => Number(a) - Number(b))
         : [];
 
+    const ImageModal = ({ isOpen, onClose, src, alt }) => (
+        <AnimatePresence>
+            {isOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={onClose}
+                    className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-xl flex items-center justify-center p-4 cursor-zoom-out"
+                >
+                    <motion.button
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="relative max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center"
+                    >
+                        <img
+                            src={src}
+                            alt={alt}
+                            className="w-full h-full object-contain drop-shadow-2xl"
+                        />
+                    </motion.button>
+
+                    {/* Close instruction */}
+                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-400 text-xs font-bold tracking-widest uppercase">
+                        Click anywhere to close
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
     return (
         <section className="py-12 lg:py-20 bg-white">
             <div className="max-w-7xl px-6 mx-auto">
 
-                {/* ── Back button ── */}
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors mb-8 text-sm font-medium"
@@ -115,7 +146,12 @@ export const SingleProduct = () => {
                 </button>
 
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
-
+                    <ImageModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        src={images[selectedImage]}
+                        alt={product.name}
+                    />
                     {/* ── Image Gallery ── */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
@@ -124,7 +160,7 @@ export const SingleProduct = () => {
                     >
                         <div className="sticky top-24 space-y-4">
                             {/* Main Image */}
-                            <div className="group relative bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100 aspect-square flex items-center justify-center p-8">
+                            <div onClick={() => setIsModalOpen(true)} className="group relative bg-gray-50 rounded-[3rem] overflow-hidden border border-gray-100 aspect-square flex items-center justify-center p-8">
                                 <AnimatePresence mode="wait">
                                     <motion.img
                                         key={selectedImage}
@@ -137,7 +173,9 @@ export const SingleProduct = () => {
                                         alt={product.name}
                                     />
                                 </AnimatePresence>
-
+                                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity bg-white/50 backdrop-blur-sm p-3 rounded-full text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /><line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" /></svg>
+                                </div>
                                 {/* Discount badge */}
                                 {product.discount > 0 && (
                                     <div className="absolute top-6 left-6 bg-rose-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full">
@@ -251,7 +289,7 @@ export const SingleProduct = () => {
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <p className="text-sm font-bold text-gray-900 uppercase tracking-widest">
-                                            Select Size (UK)
+                                            Select Size (IN)
                                         </p>
                                         {selectedSize && selectedSizeStock !== null && (
                                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full
@@ -265,6 +303,7 @@ export const SingleProduct = () => {
                                                         : "Out of stock"}
                                             </span>
                                         )}
+                                        <SizeChart />
                                     </div>
                                     <div className="flex flex-wrap gap-3">
                                         {availableSizes.map(([size, qty]) => {
@@ -296,6 +335,7 @@ export const SingleProduct = () => {
                                     )}
                                 </div>
                             )}
+                           
 
                             {/* Tags */}
                             {product.tags?.length > 0 && (
@@ -383,7 +423,10 @@ export const SingleProduct = () => {
                                 </motion.div>
                             )}
                         </div>
+
                     </motion.div>
+
+
                 </div>
             </div>
         </section>
