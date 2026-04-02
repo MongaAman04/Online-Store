@@ -26,56 +26,41 @@ export const Nav = () => {
           </motion.div>
         </Link>
 
-      {/* Navigation Links with Staggered Fade-in */}
-      <ul className="hidden md:flex gap-10 font-light uppercase text-xs tracking-[0.2em]">
-        {["Home", "Products", "About", "Contact"].map((item) => (
-          <motion.li key={item} variants={itemVariants}>
-            <NavLink
-              to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className={navLinkStyles}
-            >
-              {item}
-              {/* Animated underline for active/hover state */}
-              <motion.div className="absolute bottom-0 left-0 w-0 h-[1px] bg-rose-400" whileHover={{ width: "100%" }} />
-            </NavLink>
-          </motion.li>
-        ))}
-      </ul>
-      {
-        !user ? <div className="flex justify-center items-center">
-          <Link to={`/signup`}>
-          <motion.button
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0 20px 25px -5px rgba(244, 63, 94, 0.1), 0 8px 10px -6px rgba(244, 63, 94, 0.1)"
-            }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/login")}
-            className="group relative flex items-center gap-3 bg-rose-500 border border-rose-100 px-8 py-3 rounded-full transition-all duration-300 hover:bg-rose-600"
-          >
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-white group-hover:text-white transition-colors">
-               Login/Sign up
-            </span>
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-rose-400/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-          </motion.button>
-           </Link>
-        </div>
-          :
-          <div className="flex items-center gap-6 text-gray-700">
-            <motion.div whileHover={{ scale: 1.2, color: "#e11d48" }} className="cursor-pointer">
-              <NavLink to="/cart" className="relative">
+        {/* --- DESKTOP NAVIGATION (Hidden on Mobile) --- */}
+        <ul className="hidden md:flex gap-10 font-light uppercase text-xs tracking-[0.2em]">
+          {["Home", "Products", "About", "Contact"].map((item) => (
+            <motion.li key={item}>
+              <NavLink
+                to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                className={navLinkStyles}
+              >
+                {item}
+                <motion.div className="absolute bottom-0 left-0 w-0 h-[1px] bg-rose-400" whileHover={{ width: "100%" }} />
+              </NavLink>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* --- DESKTOP USER ACTIONS (Hidden on Mobile) --- */}
+        <div className="hidden md:flex items-center gap-6">
+          {!user ? (
+            <Link to="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-rose-500 text-white px-8 py-3 rounded-full text-xs font-bold uppercase tracking-[0.3em]"
+              >
+                Login/Sign up
+              </motion.button>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-6 text-gray-700">
+              <NavLink to="/cart" className="relative hover:text-rose-500">
                 <FaShoppingCart size={20} />
                 <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span>
               </NavLink>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="cursor-pointer"
-            >
-              <NavLink to={user.role == 'admin' ? '/profile/admin' : '/profile/user'} className="relative group">
-               
-                <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 transition-all duration-300 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-200">
+              <NavLink to={user.role === 'admin' ? '/profile/admin' : '/profile/user'}>
+                <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
                   <User size={22} strokeWidth={1.5} />
                 </span>
               </NavLink>
@@ -91,7 +76,7 @@ export const Nav = () => {
             </Link>
           ) : (
             <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
-              <Link to="/cart" className="text-gray-600">   <FaShoppingCart size={20} />
+              <Link to="/cart" className="text-gray-600"> <FaShoppingCart size={20} />
                 <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span></Link>
               <span className="text-gray-300">|</span>
               <Link to={user.role === 'admin' ? '/profile/admin' : '/profile/user'} className="text-rose-500"> <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
