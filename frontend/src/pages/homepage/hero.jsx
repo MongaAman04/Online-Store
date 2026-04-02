@@ -107,7 +107,7 @@ export const HeroSection = () => {
       <div className="hidden xl:flex absolute right-10 top-0 h-full items-center flex-col justify-center gap-24 py-10">
         <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-rose-300 to-transparent"></div>
         <p className="text-rose-400 text-[10px] tracking-[0.8em] uppercase rotate-90 whitespace-nowrap">
-          PKS LUXURY COLLECTION
+          House Of Sole LUXURY COLLECTION
         </p>
         <div className="w-[1px] h-32 bg-gradient-to-b from-transparent via-rose-300 to-transparent"></div>
       </div>

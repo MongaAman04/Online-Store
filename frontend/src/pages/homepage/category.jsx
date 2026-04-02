@@ -9,7 +9,7 @@ const categories = [
     grid: "md:col-span-1" 
   },
   { 
-    title: "PKS Special", 
+    title: "HOS Special", 
     tag: "Exclusive Design", 
     img: sample3, // Fixed: removed the curly braces around sample3
     grid: "md:col-span-2" 
@@ -82,7 +82,7 @@ export const CategorySection = () => {
                   </h3>
                   
                   {/* Subtle Interactive Button */}
-                  <div className="relative overflow-hidden inline-flex items-center group/btn">
+                  {/* <div className="relative overflow-hidden inline-flex items-center group/btn">
                     <span className="text-white text-xs font-bold tracking-[0.2em] uppercase pb-1 border-b border-rose-400/50 group-hover/btn:border-rose-400 transition-colors">
                       Explore Collection
                     </span>
@@ -93,7 +93,7 @@ export const CategorySection = () => {
                     >
                       →
                     </motion.span>
-                  </div>
+                  </div> */}
                 </motion.div>
               </div>
 

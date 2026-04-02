@@ -4,7 +4,7 @@ import { FaTruck, FaRegHeart, FaUndoAlt, FaShieldAlt } from "react-icons/fa";
 export const TrustBar = () => {
   const values = [
     { icon: <FaTruck />, title: "Free Shipping", desc: "On all orders above ₹1999" },
-    { icon: <FaUndoAlt />, title: "15-Day Returns", desc: "Hassle-free exchanges" },
+    { icon: <FaUndoAlt />, title: "7-Day Replace", desc: "Hassle-free exchanges" },
     { icon: <FaShieldAlt />, title: "Secure Checkout", desc: "100% Protected payments" },
     { icon: <FaRegHeart />, title: "Crafted with Love", desc: "Ergonomic feminine design" },
   ];
