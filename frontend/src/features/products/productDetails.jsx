@@ -1,41 +1,97 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, query, orderBy, limit, startAfter, getDocs } from "firebase/firestore";
 import { Firedb } from "../../config/firebaseConfig";
 import MyContext from "../context/mycontext";
 import Loader from "../../componets/loader";
 import toast from "react-hot-toast";
 import { Navigate, useNavigate } from "react-router-dom";
 
+const BATCH_SIZE = 8;
+
 export const ProductList = () => {
   const { cart, addToCart, deleteFromCart } = useContext(MyContext);
   const navigate = useNavigate()
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const lastDocRef = useRef(null);
 
-  useEffect(() => {
-    const q = query(
-      collection(Firedb, "products"),
-      orderBy("createdAt", "desc")
-    );
+  const fetchInitialProducts = async () => {
+    setLoading(true);
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    try {
+      const q = query(
+        collection(Firedb, "products"),
+        orderBy("createdAt", "desc"),
+        limit(BATCH_SIZE)
+      );
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        setProducts([]);
+        setHasMore(false);
+        return;
+      }
       const productList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       setProducts(productList);
-      setLoading(false);
-    }, (error) => {
+      lastDocRef.current = snapshot.docs[snapshot.docs.length - 1];
+      setHasMore(snapshot.docs.length === BATCH_SIZE);
+    } catch (error) {
       console.error(error);
       toast.error("Failed to load products.");
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+  const fetchMoreProducts = async () => {
+    if (!hasMore || loadingMore || !lastDocRef.current) return;
+    setLoadingMore(true);
+    try {
 
-    return () => unsubscribe(); // ✅ Cleanup listener on unmount
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const q = query(
+        collection(Firedb, "products"),
+        orderBy("createdAt", "desc"),
+        startAfter(lastDocRef.current),
+        limit(BATCH_SIZE)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setHasMore(false);
+        return;
+      }
+
+      const newProducts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setProducts(prev => [...prev, ...newProducts]);
+
+      // ✅ only update if docs exist
+      lastDocRef.current = snapshot.docs[snapshot.docs.length - 1];
+
+      setHasMore(snapshot.docs.length === BATCH_SIZE);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load more products.");
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInitialProducts();
   }, []);
-  const handleOnclick = (id)=>{
-      navigate(`/productdetails/${id}`)
+
+  const handleOnclick = (id) => {
+    navigate(`/productdetails/${id}`)
   }
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -73,8 +129,7 @@ export const ProductList = () => {
           <motion.div
             variants={containerVariants}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
             className="flex flex-wrap -m-4"
           >
             {products.map((item) => {
@@ -85,7 +140,7 @@ export const ProductList = () => {
                 <motion.div
                   key={id}
                   variants={cardVariants}
-                  onClick={()=>handleOnclick(id)}
+                  onClick={() => handleOnclick(id)}
                   className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
                 >
                   <div className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-rose-50/50">
@@ -163,6 +218,33 @@ export const ProductList = () => {
               );
             })}
           </motion.div>
+        )}
+        {/* After your product grid */}
+        {hasMore && (
+          <div className="flex justify-center mt-12">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={fetchMoreProducts}
+              disabled={loadingMore}
+              className="flex  items-center gap-3 px-10 py-4 bg-gray-900 text-white rounded-full font-bold tracking-widest text-xs hover:bg-rose-600 transition-colors disabled:opacity-50"
+            >
+              {loadingMore ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "LOAD MORE"
+              )}
+            </motion.button>
+          </div>
+        )}
+
+        {!hasMore && products.length > 0 && (
+          <p className="text-center text-gray-400 text-xs uppercase tracking-widest mt-10">
+            You've seen all products ✨
+          </p>
         )}
       </section>
     </div>

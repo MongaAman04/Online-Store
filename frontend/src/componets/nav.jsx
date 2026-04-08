@@ -21,7 +21,7 @@ export const Nav = () => {
         <Link to="/">
           <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer">
             <h1 className="text-2xl md:text-3xl font-serif tracking-tighter italic font-bold text-gray-900">
-              House of Sole<span className="text-rose-400 not-italic">.</span>
+              House of Sole<span className="text-rose-400 not-italic"></span>
             </h1>
           </motion.div>
         </Link>

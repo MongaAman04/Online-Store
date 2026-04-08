@@ -165,7 +165,7 @@ const Signup = () => {
                 >
                     <div className="mb-10">
                         <h1 className="text-3xl font-serif italic text-gray-900 mb-2">Create Account</h1>
-                        <p className="text-gray-500 font-light text-sm">Join PKS Luxe for exclusive early access and style updates.</p>
+                        <p className="text-gray-500 font-light text-sm">Join HOS  for exclusive early access and style updates.</p>
                     </div>
 
                     <div className="space-y-6">
