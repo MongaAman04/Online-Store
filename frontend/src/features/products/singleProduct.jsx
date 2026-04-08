@@ -183,8 +183,6 @@ export const SingleProduct = () => {
                                     </div>
                                 )}
 
-                                {/* Share */}
-
                                 <button
                                     onClick={() => {
                                         navigator.clipboard.writeText(window.location.href);
@@ -200,7 +198,6 @@ export const SingleProduct = () => {
                                 </div>
                             </div>
 
-                            {/* ✅ Thumbnail strip */}
                             {images.length > 1 && (
                                 <div className="flex gap-3 justify-center">
                                     {images.map((img, i) => (
@@ -243,7 +240,7 @@ export const SingleProduct = () => {
 
                             {/* Rating & Title */}
                             <div className="space-y-2">
-                                <div className="flex items-center gap-1 text-amber-400">
+                                {/* <div className="flex items-center gap-1 text-amber-400">
                                     {[...Array(5)].map((_, i) => (
                                         <Star
                                             key={i}
@@ -254,7 +251,7 @@ export const SingleProduct = () => {
                                     <span className="text-gray-400 text-xs font-medium ml-2">
                                         ({product.totalReviews || 0} Reviews)
                                     </span>
-                                </div>
+                                </div> */}
                                 <h1 className="text-4xl md:text-5xl font-serif italic text-gray-900 leading-tight">
                                     {product.name}
                                 </h1>
@@ -289,7 +286,7 @@ export const SingleProduct = () => {
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <p className="text-sm font-bold text-gray-900 uppercase tracking-widest">
-                                            Select Size (IN)
+                                            Select Size (Europe)
                                         </p>
                                         {selectedSize && selectedSizeStock !== null && (
                                             <span className={`text-xs font-bold px-2 py-0.5 rounded-full
@@ -335,7 +332,7 @@ export const SingleProduct = () => {
                                     )}
                                 </div>
                             )}
-                           
+
 
                             {/* Tags */}
                             {product.tags?.length > 0 && (
@@ -351,9 +348,9 @@ export const SingleProduct = () => {
                             {/* Trust Badges */}
                             <div className="grid grid-cols-3 gap-4 py-4">
                                 {[
-                                    { icon: <Truck size={18} />, label: "Fast Delivery" },
+                                    { icon: <Truck size={18} />, label: "Free & Fast Delivery" },
                                     { icon: <ShieldCheck size={18} />, label: "Authentic" },
-                                    { icon: <RotateCcw size={18} />, label: "14 Day Return" },
+                                    { icon: <RotateCcw size={18} />, label: "7 Days Exchange" },
                                 ].map(({ icon, label }) => (
                                     <div key={label} className="text-center space-y-2">
                                         <div className="mx-auto w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">

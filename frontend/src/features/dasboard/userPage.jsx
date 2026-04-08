@@ -23,7 +23,6 @@ export const Userpage = () => {
     const [loading, setLoading] = useState(true);
     const [expandedOrder, setExpandedOrder] = useState(null);
 
-    // ✅ Fetch only this user's orders
     useEffect(() => {
         if (!user?.uid) {
             setLoading(false);
@@ -115,8 +114,7 @@ const handleReplace = async (order, item, type = "replace") => {
     return (
         <div className="min-h-screen bg-white py-12 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto">
-
-                {/* ── Profile Header ── */}
+  {/* ── Profile Header ── */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}

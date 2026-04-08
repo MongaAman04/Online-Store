@@ -41,7 +41,7 @@ const Loader = () => {
                         transition={{ duration: 1.5, repeat: Infinity }}
                         className="text-rose-500 font-serif italic text-2xl font-bold tracking-tighter"
                     >
-                        PKS
+                        HOS
                     </motion.span>
                 </div>
 

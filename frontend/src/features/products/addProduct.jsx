@@ -15,11 +15,11 @@ import { uploadImage } from "../../config/cloudinary-config";
 const categoryList = [
     { name: "sneakers" }, { name: "heels" }, { name: "sandals" },
     { name: "boots" }, { name: "flats" }, { name: "loafers" },
-    { name: "sports" }, { name: "formal" }
+    { name: "sports" }, { name: "formal" },{name : "Juttis"}
 ];
 
 const genderList = ["men", "women", "unisex", "kids"];
-const sizeOptions = [3,4,5, 6, 7, 8, 9, 10, 11];
+const sizeOptions = [35,36,37,38,39,40,41];
 
 export const AddProductPage = () => {
     const { loading, setLoading } = useContext(MyContext);
@@ -141,10 +141,9 @@ export const AddProductPage = () => {
                 description: products.description.trim(),
                 price: Number(products.price),
                 originalPrice: Number(products.originalPrice),
-                // ✅ Save sizeInventory as object + totalStock as convenience field
                 sizeInventory: products.sizeInventory,
                 stock: totalStock,
-                sizes: Object.keys(products.sizeInventory).map(Number), // [6, 7, 8]
+                sizes: Object.keys(products.sizeInventory).map(Number),
                 images: uploadedUrls,
                 thumbnail: uploadedUrls[0],
                 tags: products.tags.split(",").map(t => t.trim()).filter(Boolean),
