@@ -155,7 +155,7 @@ const Login = () => {
                     {/* Brand */}
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-serif italic font-bold text-gray-900 mb-2">
-                            PKS<span className="text-rose-500">.</span>
+                            HOS<span className="text-rose-500"></span>
                         </h1>
                         <p className="text-xs uppercase tracking-[0.3em] text-rose-400 font-bold">
                             Welcome Back, Muse
@@ -248,7 +248,7 @@ const Login = () => {
                         <p className="text-sm text-gray-500 font-light">
                             Don't have an account?{" "}
                             <Link className="text-rose-500 font-bold hover:underline transition-all" to="/signup">
-                                Join the Club
+                                Sign up
                             </Link>
                         </p>
                     </div>
