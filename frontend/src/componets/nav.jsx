@@ -44,7 +44,7 @@ export const Nav = () => {
         {/* --- DESKTOP USER ACTIONS (Hidden on Mobile) --- */}
         <div className="hidden md:flex items-center gap-6">
           {!user ? (
-            <Link to="/signup">
+            <Link to="/login">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

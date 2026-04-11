@@ -13,17 +13,18 @@ export const Footer = () => {
           {/* --- Column 1: Brand Story --- */}
           <div className="space-y-6">
             <Link to="/" className="text-3xl font-serif italic font-bold text-gray-900">
-              House of Sole<span className="text-rose-500">.</span>
+              House of Sole<span className="text-rose-500"></span>
             </Link>
             <p className="text-gray-500 font-light leading-relaxed text-sm">
               Crafting elegance for the modern woman. From boardroom power moves to midnight galas, we ensure every step you take is a statement.
             </p>
             <div className="flex gap-4">
-              {[<FaInstagram />, <FaFacebookF />, <FaPinterestP />, <FaTwitter />].map((icon, i) => (
+              {[<FaInstagram />].map((icon, i) => (
                 <motion.a 
                   key={i}
+                  target="blank"
                   whileHover={{ y: -3, color: "#e11d48" }}
-                  href="#" 
+                  href="https://www.instagram.com/houseofsole.in?igsh=MWpmamh6MWlkMXd3eg==" 
                   className="text-gray-400 text-lg transition-colors"
                 >
                   {icon}

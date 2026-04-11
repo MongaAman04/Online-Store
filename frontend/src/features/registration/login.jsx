@@ -158,7 +158,7 @@ const Login = () => {
                             HOS<span className="text-rose-500"></span>
                         </h1>
                         <p className="text-xs uppercase tracking-[0.3em] text-rose-400 font-bold">
-                            Welcome Back, Muse
+                            Welcome Back, Please Login
                         </p>
                     </div>
 
