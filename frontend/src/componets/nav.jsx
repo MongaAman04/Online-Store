@@ -18,25 +18,25 @@ export const Nav = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center p-6">
 
         {/* --- LOGO (Shared) --- */}
-        <Link to="/">
+        <a href="/">
           <motion.div whileHover={{ scale: 1.05 }} className="cursor-pointer">
             <h1 className="text-2xl md:text-3xl font-serif tracking-tighter italic font-bold text-gray-900">
               House of Sole<span className="text-rose-400 not-italic"></span>
             </h1>
           </motion.div>
-        </Link>
+        </a>
 
         {/* --- DESKTOP NAVIGATION (Hidden on Mobile) --- */}
         <ul className="hidden md:flex gap-10 font-light uppercase text-xs tracking-[0.2em]">
           {["Home", "Products", "About", "Contact"].map((item) => (
             <motion.li key={item}>
-              <NavLink
-                to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+              <a
+                href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
                 className={navLinkStyles}
               >
                 {item}
                 <motion.div className="absolute bottom-0 left-0 w-0 h-[1px] bg-rose-400" whileHover={{ width: "100%" }} />
-              </NavLink>
+              </a>
             </motion.li>
           ))}
         </ul>
@@ -44,7 +44,7 @@ export const Nav = () => {
         {/* --- DESKTOP USER ACTIONS (Hidden on Mobile) --- */}
         <div className="hidden md:flex items-center gap-6">
           {!user ? (
-            <Link to="/login">
+            <a href="/login">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -52,18 +52,18 @@ export const Nav = () => {
               >
                 Login/Sign up
               </motion.button>
-            </Link>
+            </a>
           ) : (
             <div className="flex items-center gap-6 text-gray-700">
-              <NavLink to="/cart" className="relative hover:text-rose-500">
+              <a href="/cart" className="relative hover:text-rose-500">
                 <FaShoppingCart size={20} />
                 <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span>
-              </NavLink>
-              <NavLink to={user.role === 'admin' ? '/profile/admin' : '/profile/user'}>
+              </a>
+              <a href={user.role === 'admin' ? '/profile/admin' : '/profile/user'}>
                 <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
                   <User size={22} strokeWidth={1.5} />
                 </span>
-              </NavLink>
+              </a>
             </div>
           )}
         </div>
@@ -71,17 +71,17 @@ export const Nav = () => {
         {/* --- MOBILE USER ACTIONS (Only text, visible on Mobile only) --- */}
         <div className="flex md:hidden items-center gap-4">
           {!user ? (
-            <Link to="/signup" className="text-[10px] font-bold uppercase tracking-widest text-rose-500">
+            <a href="/signup" className="text-[10px] font-bold uppercase tracking-widest text-rose-500">
               Sign In
-            </Link>
+            </a>
           ) : (
             <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest">
-              <Link to="/cart" className="text-gray-600"> <FaShoppingCart size={20} />
-                <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span></Link>
+              <a href="/cart" className="text-gray-600"> <FaShoppingCart size={20} />
+                <span className="absolute -top-3 -right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">2</span></a>
               <span className="text-gray-300">|</span>
-              <Link to={user.role === 'admin' ? '/profile/admin' : '/profile/user'} className="text-rose-500"> <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
+              <a href={user.role === 'admin' ? '/profile/admin' : '/profile/user'} className="text-rose-500"> <span className="flex items-center justify-center w-12 h-12 bg-rose-50 text-rose-500 rounded-full border border-rose-100 hover:bg-rose-500 hover:text-white transition-all">
                 <User size={22} strokeWidth={1.5} />
-              </span></Link>
+              </span></a>
             </div>
           )}
         </div>
@@ -92,14 +92,14 @@ export const Nav = () => {
         <ul className="flex justify-between items-center px-6 py-3 gap-6">
           {["Home", "Products", "About", "Contact"].map((item) => (
             <li key={item} className="flex-shrink-0">
-              <NavLink
-                to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+              <a
+                href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
                 className={({ isActive }) =>
                   `text-[10px] uppercase tracking-[0.15em] ${isActive ? "text-rose-600 border-b border-rose-600" : "text-gray-500"}`
                 }
               >
                 {item}
-              </NavLink>
+              </a>
             </li>
           ))}
         </ul>

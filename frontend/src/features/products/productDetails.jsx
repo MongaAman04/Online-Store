@@ -179,12 +179,13 @@ export const ProductList = () => {
               const isItemInCart = cart.some((p) => p.id === id);
 
               return (
+                <a href={`/productdetails/${id}`}  className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
                 <motion.div
                   key={id}
                   variants={cardVariants}
-                  onClick={() => navigate(`/productdetails/${id}`)}
-                  className="p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+                  // onClick={() => navigate(``)}
                 >
+                 
                   <div className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-rose-50/50">
                     {discount > 0 && (
                       <div className="absolute top-3 left-3 z-10 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
@@ -237,6 +238,7 @@ export const ProductList = () => {
                     </div>
                   </div>
                 </motion.div>
+                </a>
               );
             })}
           </motion.div>
