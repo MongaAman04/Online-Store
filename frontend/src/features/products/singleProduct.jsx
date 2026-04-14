@@ -7,7 +7,7 @@ import { Star, ShieldCheck, Truck, RotateCcw, ChevronLeft, Heart, Share2 } from 
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { SizeChart } from "../../componets/sizeChart";
-
+import Cookies from "js-cookie";
 export const SingleProduct = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -62,22 +62,31 @@ export const SingleProduct = () => {
         deleteFromCart({ id: `${product.id}_${selectedSize}` });
         toast("Removed from bag 🛍️");
     };
-    const handleBuyNow = () => {
-        if (!selectedSize) {
-            toast.error("Please select a size first.");
-            return;
-        }
-        const orderItem = {
-            ...product,
-            selectedSize,
-            quantity: 1,
-            id: `${product.id}_${selectedSize}`,
-            productId: product.id,
-        };
+  const handleBuyNow = () => {
+    if (!selectedSize) {
+        toast.error("Please select a size first.");
+        return;
+    }
 
-        sessionStorage.setItem("buyNowItem", JSON.stringify(orderItem));
-        navigate("/placeorder");
+     const user = JSON.parse(Cookies.get("hos_users") || "null");
+    if (!user) {
+        sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
+
+        navigate("/login");
+        return;
+    }
+
+    const orderItem = {
+        ...product,
+        selectedSize,
+        quantity: 1,
+        id: `${product.id}_${selectedSize}`,
+        productId: product.id,
     };
+
+    sessionStorage.setItem("buyNowItem", JSON.stringify(orderItem));
+    navigate("/placeorder");
+};
     const selectedSizeStock = selectedSize
         ? product?.sizeInventory?.[selectedSize] ?? 0
         : null;
