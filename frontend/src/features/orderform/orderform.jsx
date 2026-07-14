@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useContext, useCallback } from "react";
 import { motion } from "framer-motion";
 import { User, MapPin, Phone, ShoppingBag, CheckCircle, Mail, Building, Hash } from "lucide-react";
@@ -30,6 +31,10 @@ export const OrderForm = () => {
     const [pincode, setPincode] = useState("");
     const [state, setState] = useState("");
     // const [phoneVerified, setPhoneVerified] = useState(false);
+
+    // ✅ Terms & Privacy consent for this order
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
     const subtotal = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const totalDiscount = orderItems.reduce((acc, item) =>
         acc + (((item.originalPrice || item.price) - item.price) * item.quantity), 0
@@ -49,6 +54,10 @@ export const OrderForm = () => {
         if (!pincode.trim()) newErrors.pincode = "Pincode is required.";
         else if (!/^\d{6}$/.test(pincode)) newErrors.pincode = "Enter valid 6-digit pincode.";
         if (!state.trim()) newErrors.state = "State is required.";
+        // ✅ Order-level consent — separate from account signup consent, since
+        // a guest checkout or a returning user placing a new order should
+        // both explicitly confirm they accept the policies in force *now*.
+        if (!agreedToTerms) newErrors.terms = "You must agree to the Terms & Conditions and Privacy Policy to place this order.";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -90,6 +99,9 @@ export const OrderForm = () => {
                 status: "pending",
                 paymentMethod: "COD",
                 paymentStatus: "unpaid",
+                // ✅ Audit trail for this specific order's consent
+                termsAccepted: true,
+                termsAcceptedAt: Timestamp.now(),
                 createdAt: Timestamp.now(),
                 date: new Date().toLocaleString("en-IN", {
                     day: "2-digit", month: "short", year: "numeric"
@@ -290,6 +302,32 @@ export const OrderForm = () => {
                                 />
                             </div>
                             {errors.state && <p className="text-red-500 text-xs mt-1 ml-2">{errors.state}</p>}
+                        </div>
+
+                        {/* Terms & Privacy Consent */}
+                        <div className="pt-1">
+                            <label className="flex items-start gap-3 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    checked={agreedToTerms}
+                                    onChange={(e) => {
+                                        setAgreedToTerms(e.target.checked);
+                                        setErrors(p => ({ ...p, terms: "" }));
+                                    }}
+                                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-400 accent-rose-500"
+                                />
+                                <span className="text-xs font-light text-gray-500 leading-relaxed">
+                                    I agree to the{" "}
+                                    <Link to="/terms-conditions" target="_blank" className="text-rose-500 font-medium hover:underline">
+                                        Terms &amp; Conditions
+                                    </Link>{" "}
+                                    and{" "}
+                                    <Link to="/privacy-policy" target="_blank" className="text-rose-500 font-medium hover:underline">
+                                        Privacy Policy
+                                    </Link>, and confirm the order details above are correct.
+                                </span>
+                            </label>
+                            {errors.terms && <p className="text-red-500 text-xs mt-1 ml-2">{errors.terms}</p>}
                         </div>
 
                         {/* Submit */}

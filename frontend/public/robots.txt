@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /profile/
+Disallow: /order
+Disallow: /cart
+
+Sitemap: https://www.houseofsole.in/sitemap.xml

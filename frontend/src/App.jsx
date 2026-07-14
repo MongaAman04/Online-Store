@@ -19,6 +19,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Applayout from './componets/applayout';
 import { ProductList } from './features/products/productDetails';
 import { Car } from 'lucide-react';
+import TermsAndConditions from './pages/terms/terms';
+import PrivacyPolicy from './pages/privacy/privacy';
+import CookiePolicy from './pages/cookie/cookie';
 
 const router = createBrowserRouter([
   {
@@ -74,6 +77,18 @@ const router = createBrowserRouter([
       {
         path:'/placeorder',
         element:<UserRoute><OrderForm /></UserRoute>,
+      },
+      {
+        path:'/terms-conditions',
+        element:<TermsAndConditions/>,
+      },
+      {
+        path:'/privacy-policy',
+        element:<PrivacyPolicy/>,
+      },
+      {
+        path:'/cookie-policy',
+        element:<CookiePolicy/>,
       },
     ]
 

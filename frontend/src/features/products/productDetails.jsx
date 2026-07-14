@@ -6,6 +6,7 @@ import MyContext from "../context/mycontext";
 import Loader from "../../componets/loader";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ProductGridSkeleton from "./view/skelton-loader";
 
 const BATCH_SIZE = 8;
 
@@ -88,7 +89,7 @@ export const ProductList = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <ProductGridSkeleton />;
 
   return (
     <div className="mt-16 px-4">

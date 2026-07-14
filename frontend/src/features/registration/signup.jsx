@@ -22,16 +22,21 @@ const Signup = () => {
         role: "user"
     });
 
+    // ✅ Consent checkbox state (kept separate from userSignUp so it doesn't get
+    // wiped by the form-reset after a successful signup — see comment below)
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+
     const [errors, setErrors] = useState({
         name: "",
         email: "",
         password: "",
-        phone: ""
+        phone: "",
+        terms: ""
     });
 
     // ✅ Validation function
     const validate = () => {
-        let newErrors = { name: "", email: "", password: "", phone: "" };
+        let newErrors = { name: "", email: "", password: "", phone: "", terms: "" };
         let isValid = true;
 
         if (!userSignUp.name.trim()) {
@@ -84,6 +89,12 @@ const Signup = () => {
             isValid = false;
         }
 
+        // ✅ Terms & Privacy consent must be explicitly checked
+        if (!agreedToTerms) {
+            newErrors.terms = "You must agree to the Terms & Conditions and Privacy Policy to continue.";
+            isValid = false;
+        }
+
         setErrors(newErrors);
         return isValid;
     };
@@ -106,14 +117,20 @@ const Signup = () => {
                     month: "short",
                     day: "2-digit",
                     year: "numeric",
-                })
+                }),
+                // ✅ Store consent as an auditable record — useful if a consumer
+                // dispute or grievance complaint ever asks "did the user agree?"
+                termsAccepted: true,
+                termsAcceptedAt: Timestamp.now(),
+                signupMethod: "email"
             };
 
             const UserRef = collection(Firedb, "user");
             await addDoc(UserRef, user);
             Cookies.set("hos_users", JSON.stringify(user), { expires: 15 });
             setUserSignUp({ name: "", email: "", password: "", phone: "", role: "user" });
-            setErrors({ name: "", email: "", password: "", phone: "" });
+            setAgreedToTerms(false);
+            setErrors({ name: "", email: "", password: "", phone: "", terms: "" });
             setLoading(false);
             toast.success("Welcome to Store!");
             navigate("/");
@@ -237,6 +254,32 @@ const Signup = () => {
                                     ${errors.phone ? "border-red-400" : "border-gray-200 focus:border-rose-400"}`}
                             />
                             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                        </div>
+
+                        {/* Terms & Privacy Consent */}
+                        <div>
+                            <label className="flex items-start gap-3 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    checked={agreedToTerms}
+                                    onChange={(e) => {
+                                        setAgreedToTerms(e.target.checked);
+                                        setErrors(prev => ({ ...prev, terms: "" }));
+                                    }}
+                                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-400 accent-rose-500"
+                                />
+                                <span className="text-xs font-light text-gray-500 leading-relaxed">
+                                    I agree to the{" "}
+                                    <Link to="/terms-conditions" target="_blank" className="text-rose-500 font-medium hover:underline">
+                                        Terms &amp; Conditions
+                                    </Link>{" "}
+                                    and{" "}
+                                    <Link to="/privacy-policy" target="_blank" className="text-rose-500 font-medium hover:underline">
+                                        Privacy Policy
+                                    </Link>.
+                                </span>
+                            </label>
+                            {errors.terms && <p className="text-red-500 text-xs mt-1">{errors.terms}</p>}
                         </div>
 
                         <motion.button

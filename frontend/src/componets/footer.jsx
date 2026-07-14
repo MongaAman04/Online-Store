@@ -50,7 +50,7 @@ export const Footer = () => {
             <ul className="space-y-4 text-sm text-gray-500 font-light">
               <li><Link to="/contact" className="hover:text-rose-500 transition-colors">Contact Us</Link></li>
               <li><Link to="/about" className="hover:text-rose-500 transition-colors">Our Story</Link></li>
-              <li><Link to="#" className="hover:text-rose-500 transition-colors">Shipping & Returns</Link></li>
+              <li><Link to="/terms-consitions" className="hover:text-rose-500 transition-colors">Shipping & Returns</Link></li>
               <li><Link to="#" className="hover:text-rose-500 transition-colors">Size Guide</Link></li>
             </ul>
           </div>
@@ -75,11 +75,15 @@ export const Footer = () => {
         {/* --- Bottom Bar --- */}
         <div className="pt-8 border-t border-rose-50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-            © {currentYear} PKS Luxe Footwear. All rights reserved.
+            © {currentYear} Zibmate Pvt. Ltd. All rights reserved.
+          </p>
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+           Built and Managed by Zibmate Studio
           </p>
           <div className="flex gap-8 text-[10px] text-gray-400 uppercase tracking-widest">
-            <Link to="#" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
-            <Link to="#" className="hover:text-gray-900 transition-colors">Terms of Service</Link>
+            <Link to="/privacy-policy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
+            <Link to="/terms-conditions" className="hover:text-gray-900 transition-colors">Terms and Conditions</Link>
+            <Link to="/cookie-policy" className="hover:text-gray-900 transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
